@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Jscriptz SmartShipping - Default Configuration Values
+ *
+ * Combined defaults for USPS, UPS, and FedEx carriers
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <!-- ═══════════════════════════════════════════════════════════════════════
+                 USPS Carrier Defaults
+                 ═══════════════════════════════════════════════════════════════════════ -->
+            <uspsv3>
+                <!-- General -->
+                <active>0</active>
+                <title>USPS</title>
+                <environment>sandbox</environment>
+                <model>Jscriptz\SmartShipping\Model\Usps\Carrier</model>
+
+                <!-- Credentials -->
+                <consumer_key backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <consumer_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+
+                <!-- Shipping Options -->
+                <allowed_methods>USPS_GROUND_ADVANTAGE,PRIORITY_MAIL,PRIORITY_MAIL_EXPRESS</allowed_methods>
+                <price_type>RETAIL</price_type>
+                <max_weight>70</max_weight>
+                <handling_fee>0</handling_fee>
+                <free_shipping_threshold>0</free_shipping_threshold>
+                <cutoff_time>14:00</cutoff_time>
+                <pickup_days>1,2,3,4,5</pickup_days>
+                <pickup_time>15:00</pickup_time>
+                <grace_period>0</grace_period>
+                <grace_period_unit>days</grace_period_unit>
+
+                <!-- Caching -->
+                <cache_enabled>1</cache_enabled>
+                <cache_ttl>3600</cache_ttl>
+                <cache_fallback>1</cache_fallback>
+
+                <!-- Address Validation -->
+                <address_validation_enabled>0</address_validation_enabled>
+                <address_auto_correct>0</address_auto_correct>
+
+                <!-- Shipping Restrictions -->
+                <sallowspecific>0</sallowspecific>
+                <specificcountry>US</specificcountry>
+                <showmethod>0</showmethod>
+                <sort_order>30</sort_order>
+
+                <!-- Developer -->
+                <debug>0</debug>
+            </uspsv3>
+
+            <!-- ═══════════════════════════════════════════════════════════════════════
+                 UPS Carrier Defaults
+                 ═══════════════════════════════════════════════════════════════════════ -->
+            <upsv3>
+                <!-- General -->
+                <active>0</active>
+                <title>UPS</title>
+                <name>UPS Shipping</name>
+                <environment>sandbox</environment>
+                <model>Jscriptz\SmartShipping\Model\Ups\Carrier</model>
+
+                <!-- Credentials -->
+                <client_id backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <client_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <account_number backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+
+                <!-- Shipping Options -->
+                <allowed_methods>03,02,12,01</allowed_methods>
+                <package_type>02</package_type>
+                <max_weight>150</max_weight>
+                <handling_fee>0</handling_fee>
+                <free_shipping_threshold>0</free_shipping_threshold>
+
+                <!-- Caching -->
+                <cache_enabled>1</cache_enabled>
+                <cache_ttl>3600</cache_ttl>
+                <cache_fallback>1</cache_fallback>
+
+                <!-- Address Validation -->
+                <address_validation_enabled>0</address_validation_enabled>
+                <address_auto_correct>0</address_auto_correct>
+
+                <!-- Time in Transit -->
+                <transit_enabled>1</transit_enabled>
+                <pickup_days>1,2,3,4,5</pickup_days>
+                <pickup_time>15:00</pickup_time>
+                <cutoff_time>14:00</cutoff_time>
+                <grace_period>0</grace_period>
+                <grace_period_unit>days</grace_period_unit>
+
+                <!-- Shipping Restrictions -->
+                <sallowspecific>0</sallowspecific>
+                <specificcountry/>
+                <showmethod>0</showmethod>
+                <sort_order>10</sort_order>
+
+                <!-- Developer -->
+                <debug>0</debug>
+            </upsv3>
+
+            <!-- ═══════════════════════════════════════════════════════════════════════
+                 FedEx Carrier Defaults
+                 ═══════════════════════════════════════════════════════════════════════ -->
+            <fedexv3>
+                <!-- General -->
+                <active>0</active>
+                <title>FedEx</title>
+                <environment>sandbox</environment>
+                <model>Jscriptz\SmartShipping\Model\Fedex\Carrier</model>
+
+                <!-- Credentials -->
+                <client_id backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <client_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <account_number backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+
+                <!-- Shipping Options -->
+                <allowed_methods>FEDEX_GROUND,GROUND_HOME_DELIVERY,FEDEX_EXPRESS_SAVER,FEDEX_2_DAY,PRIORITY_OVERNIGHT</allowed_methods>
+                <package_type>YOUR_PACKAGING</package_type>
+                <max_weight>150</max_weight>
+                <handling_fee>0</handling_fee>
+                <free_shipping_threshold>0</free_shipping_threshold>
+                <cutoff_time>14:00</cutoff_time>
+                <pickup_days>1,2,3,4,5</pickup_days>
+                <pickup_time>15:00</pickup_time>
+                <grace_period>0</grace_period>
+                <grace_period_unit>days</grace_period_unit>
+
+                <!-- Caching -->
+                <cache_enabled>1</cache_enabled>
+                <cache_ttl>3600</cache_ttl>
+                <cache_fallback>1</cache_fallback>
+
+                <!-- Address Validation -->
+                <address_validation_enabled>0</address_validation_enabled>
+                <address_auto_correct>0</address_auto_correct>
+
+                <!-- Shipping Restrictions -->
+                <sallowspecific>0</sallowspecific>
+                <showmethod>0</showmethod>
+                <sort_order>20</sort_order>
+
+                <!-- Developer -->
+                <debug>0</debug>
+            </fedexv3>
+        </carriers>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             Smart Shipping Display Settings Defaults
+             ═══════════════════════════════════════════════════════════════════════ -->
+        <smartshipping>
+            <general>
+                <!-- Timezone (empty = use Magento default) -->
+                <timezone/>
+
+                <!-- Shipping Method Display -->
+                <estimates_enabled>1</estimates_enabled>
+                <badges_enabled>1</badges_enabled>
+                <fastest_label>Fastest</fastest_label>
+                <cheapest_label>Best Value</cheapest_label>
+                <processing_days>1</processing_days>
+                <method_limit>5</method_limit>
+                <method_show_more_enabled>1</method_show_more_enabled>
+                <method_sort_by>price_asc</method_sort_by>
+                <method_allow_frontend_sort>0</method_allow_frontend_sort>
+
+                <!-- Free Shipping Progress -->
+                <free_shipping_enabled>1</free_shipping_enabled>
+                <free_shipping_message>Add {amount} more for FREE shipping!</free_shipping_message>
+                <free_shipping_success_message>You qualify for FREE shipping!</free_shipping_success_message>
+
+                <!-- Cutoff Countdown -->
+                <cutoff_enabled>1</cutoff_enabled>
+                <cutoff_message>Order in {time} for this delivery option</cutoff_message>
+                <cutoff_expired_message>Cutoff passed - ships next business day</cutoff_expired_message>
+                <cutoff_colors_enabled>1</cutoff_colors_enabled>
+                <cutoff_color_red_hours>1</cutoff_color_red_hours>
+                <cutoff_color_amber_hours>2</cutoff_color_amber_hours>
+                <cutoff_color_green_hours>3</cutoff_color_green_hours>
+            </general>
+        </smartshipping>
+    </default>
+</config>

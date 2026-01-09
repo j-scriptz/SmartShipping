@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Jscriptz SmartShipping - REST API Configuration
+ *
+ * Exposes transit time data for frontend components
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <!-- Get transit times for a cart -->
+    <route url="/V1/smartshipping/transit-times/:cartId" method="GET">
+        <service class="Jscriptz\SmartShipping\Api\TransitTimeManagementInterface" method="getByCartId"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <!-- Get all transit times from session -->
+    <route url="/V1/smartshipping/transit-times" method="GET">
+        <service class="Jscriptz\SmartShipping\Api\TransitTimeManagementInterface" method="getAll"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+</routes>

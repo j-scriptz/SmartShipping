@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Jscriptz SmartShipping - Dependency Injection Configuration
+ *
+ * Registers carriers: USPS, UPS, FedEx
+ * Provides: TransitTimeRepository, loggers per carrier
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- API Interface Preferences -->
+    <preference for="Jscriptz\SmartShipping\Api\TransitTimeRepositoryInterface"
+                type="Jscriptz\SmartShipping\Model\TransitTimeRepository"/>
+    <preference for="Jscriptz\SmartShipping\Api\TransitTimeManagementInterface"
+                type="Jscriptz\SmartShipping\Model\TransitTimeManagement"/>
+    <preference for="Jscriptz\SmartShipping\Api\Data\TransitTimeInterface"
+                type="Jscriptz\SmartShipping\Model\TransitTime"/>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         USPS Carrier Configuration
+         ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- USPS Virtual Logger -->
+    <virtualType name="Jscriptz\SmartShipping\Model\Usps\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Jscriptz\SmartShipping\Model\Usps\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/uspsv3.log</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- USPS Carrier -->
+    <type name="Jscriptz\SmartShipping\Model\Usps\Carrier">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- USPS Clients -->
+    <type name="Jscriptz\SmartShipping\Model\Usps\Client\AuthClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Jscriptz\SmartShipping\Model\Usps\Client\ShippingOptionsClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- USPS Cache -->
+    <type name="Jscriptz\SmartShipping\Model\Usps\Cache\RateCache">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- USPS Response Parser -->
+    <type name="Jscriptz\SmartShipping\Model\Usps\Response\ShippingOptionsResponseParser">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         UPS Carrier Configuration
+         ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- UPS Virtual Logger -->
+    <virtualType name="Jscriptz\SmartShipping\Model\Ups\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Jscriptz\SmartShipping\Model\Ups\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/upsv3.log</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- UPS Carrier -->
+    <type name="Jscriptz\SmartShipping\Model\Ups\Carrier">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- UPS Clients -->
+    <type name="Jscriptz\SmartShipping\Model\Ups\Client\AuthClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Jscriptz\SmartShipping\Model\Ups\Client\RatingClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Jscriptz\SmartShipping\Model\Ups\Client\TransitClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- UPS Cache -->
+    <type name="Jscriptz\SmartShipping\Model\Ups\Cache\RateCache">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- UPS Response Parser -->
+    <type name="Jscriptz\SmartShipping\Model\Ups\Response\RateResponseParser">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         FedEx Carrier Configuration
+         ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- FedEx Virtual Logger -->
+    <virtualType name="Jscriptz\SmartShipping\Model\Fedex\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Jscriptz\SmartShipping\Model\Fedex\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/fedexv3.log</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- FedEx Carrier -->
+    <type name="Jscriptz\SmartShipping\Model\Fedex\Carrier">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- FedEx Clients -->
+    <type name="Jscriptz\SmartShipping\Model\Fedex\Client\AuthClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Jscriptz\SmartShipping\Model\Fedex\Client\RatingClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- FedEx Cache -->
+    <type name="Jscriptz\SmartShipping\Model\Fedex\Cache\RateCache">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- FedEx Response Parser -->
+    <type name="Jscriptz\SmartShipping\Model\Fedex\Response\RateResponseParser">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
+</config>

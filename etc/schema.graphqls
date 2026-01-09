@@ -1,0 +1,21 @@
+# Jscriptz SmartShipping - GraphQL Schema
+#
+# Provides transit time data for shipping methods from USPS, UPS, and FedEx carriers
+
+type TransitTimeData @doc(description: "Transit time data for a shipping method") {
+    carrier_code: String! @doc(description: "Carrier code (e.g., uspsv3, upsv3, fedexv3)")
+    method_code: String! @doc(description: "Method code (e.g., 03, FEDEX_GROUND)")
+    min_days: Int! @doc(description: "Minimum transit days")
+    max_days: Int! @doc(description: "Maximum transit days")
+    delivery_date: String @doc(description: "Estimated delivery date (Y-m-d)")
+    delivery_day: String @doc(description: "Day of week for delivery")
+    delivery_time: String @doc(description: "Delivery time if available")
+    guaranteed: Boolean! @doc(description: "Whether delivery is guaranteed")
+    cutoff_hour: Int @doc(description: "Cutoff hour for same-day shipping (0-23)")
+}
+
+type Query {
+    getTransitTimes(
+        cart_id: String! @doc(description: "The masked cart ID")
+    ): [TransitTimeData!]! @resolver(class: "Jscriptz\\SmartShipping\\Model\\Resolver\\GetTransitTimes") @doc(description: "Get transit times for available shipping methods")
+}
