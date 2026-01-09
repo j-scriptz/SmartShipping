@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Jscriptz SmartShipping - Event Observers
+ *
+ * Registers observers for auto-shipment triggers.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+
+    <!-- Auto-ship when order is placed -->
+    <event name="sales_order_place_after">
+        <observer name="jscriptz_smartshipping_auto_ship_on_order_place"
+                  instance="Jscriptz\SmartShipping\Observer\AutoShipOnOrderPlace"/>
+    </event>
+
+    <!-- Auto-ship when invoice is created -->
+    <event name="sales_order_invoice_save_after">
+        <observer name="jscriptz_smartshipping_auto_ship_on_invoice"
+                  instance="Jscriptz\SmartShipping\Observer\AutoShipOnInvoice"/>
+    </event>
+
+</config>

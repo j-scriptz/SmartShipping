@@ -18,6 +18,16 @@
     <preference for="Jscriptz\SmartShipping\Api\Data\TransitTimeInterface"
                 type="Jscriptz\SmartShipping\Model\TransitTime"/>
 
+    <!-- Shipment Service Interfaces -->
+    <preference for="Jscriptz\SmartShipping\Api\ShipmentServiceInterface"
+                type="Jscriptz\SmartShipping\Model\Shipment\ShipmentService"/>
+    <preference for="Jscriptz\SmartShipping\Api\LabelProviderInterface"
+                type="Jscriptz\SmartShipping\Model\Usps\LabelProvider"/>
+    <preference for="Jscriptz\SmartShipping\Api\Data\ShipmentLabelInterface"
+                type="Jscriptz\SmartShipping\Model\Shipment\ShipmentLabel"/>
+    <preference for="Jscriptz\SmartShipping\Api\Data\ShipmentResultInterface"
+                type="Jscriptz\SmartShipping\Model\Shipment\ShipmentResult"/>
+
     <!-- ═══════════════════════════════════════════════════════════════════════
          USPS Carrier Configuration
          ═══════════════════════════════════════════════════════════════════════ -->
@@ -180,6 +190,81 @@
     <type name="Jscriptz\SmartShipping\Model\Fedex\Response\RateResponseParser">
         <arguments>
             <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Shipment Automation Configuration
+         ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- SmartShipping Virtual Logger -->
+    <virtualType name="Jscriptz\SmartShipping\Model\Shipment\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Jscriptz\SmartShipping\Model\Shipment\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Jscriptz\SmartShipping\Model\Shipment\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/smartshipping.log</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Label Provider Pool -->
+    <type name="Jscriptz\SmartShipping\Model\Shipment\LabelProviderPool">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="uspsv3" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\LabelProvider</item>
+                <!-- UPS and FedEx providers will be added later -->
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Shipment Service -->
+    <type name="Jscriptz\SmartShipping\Model\Shipment\ShipmentService">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Shipment\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- USPS Label Clients -->
+    <type name="Jscriptz\SmartShipping\Model\Usps\Client\PaymentClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Jscriptz\SmartShipping\Model\Usps\Client\LabelClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Jscriptz\SmartShipping\Model\Usps\Client\TrackingClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- USPS Label Provider -->
+    <type name="Jscriptz\SmartShipping\Model\Usps\LabelProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- Auto-Ship Observers -->
+    <type name="Jscriptz\SmartShipping\Observer\AutoShipOnOrderPlace">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Shipment\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Jscriptz\SmartShipping\Observer\AutoShipOnInvoice">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Shipment\Logger</argument>
         </arguments>
     </type>
 

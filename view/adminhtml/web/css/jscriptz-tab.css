@@ -1,0 +1,19 @@
+.config-nav .jscriptz-tab .admin__page-nav-title {
+    position: relative;
+    padding-left: 52px; /* room for the icon */
+}
+
+.config-nav .jscriptz-tab .admin__page-nav-title::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 25px;
+    /* Use the SVG as the icon */
+    background-image: url('../images/jscriptz-z-circle-icon.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; /* keep aspect ratio */
+}

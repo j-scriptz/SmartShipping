@@ -19,6 +19,9 @@ class Config
 
     private const OAUTH_TOKEN_PATH = '/oauth2/v3/token';
     private const SHIPMENT_OPTIONS_PATH = '/shipments/v3/options/search';
+    private const LABEL_PATH = '/labels/v3/label';
+    private const PAYMENT_AUTH_PATH = '/payments/v3/payment-authorization';
+    private const TRACKING_PATH = '/tracking/v3/tracking';
 
     public function __construct(
         private readonly ScopeConfigInterface $scopeConfig
@@ -250,5 +253,132 @@ class Config
         }
 
         return $period;
+    }
+
+    // ========================================================================
+    // Label Generation Configuration
+    // ========================================================================
+
+    /**
+     * Get Label API URL
+     */
+    public function getLabelUrl(?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::LABEL_PATH;
+    }
+
+    /**
+     * Get Payment Authorization API URL
+     */
+    public function getPaymentAuthUrl(?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::PAYMENT_AUTH_PATH;
+    }
+
+    /**
+     * Get Tracking API URL
+     */
+    public function getTrackingUrl(?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::TRACKING_PATH;
+    }
+
+    /**
+     * Check if label generation is enabled
+     */
+    public function isLabelEnabled(?int $storeId = null): bool
+    {
+        return $this->getFlag('label_enabled', $storeId);
+    }
+
+    /**
+     * Get payment account type (EPS or PERMIT)
+     */
+    public function getPaymentAccountType(?int $storeId = null): string
+    {
+        return $this->getValue('payment_account_type', $storeId) ?? 'EPS';
+    }
+
+    /**
+     * Get payment account number
+     */
+    public function getPaymentAccountNumber(?int $storeId = null): string
+    {
+        return $this->getValue('payment_account_number', $storeId) ?? '';
+    }
+
+    /**
+     * Get Customer Registration ID (CRID)
+     */
+    public function getCrid(?int $storeId = null): string
+    {
+        return $this->getValue('crid', $storeId) ?? '';
+    }
+
+    /**
+     * Get Mailer ID (MID)
+     */
+    public function getMid(?int $storeId = null): string
+    {
+        return $this->getValue('mid', $storeId) ?? '';
+    }
+
+    /**
+     * Get Manifest MID
+     */
+    public function getManifestMid(?int $storeId = null): string
+    {
+        return $this->getValue('manifest_mid', $storeId) ?? $this->getMid($storeId);
+    }
+
+    /**
+     * Get label format (PDF, PNG, ZPL)
+     */
+    public function getLabelFormat(?int $storeId = null): string
+    {
+        return $this->getValue('label_format', $storeId) ?? 'PDF';
+    }
+
+    /**
+     * Get default package weight (lbs)
+     */
+    public function getDefaultWeight(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_weight', $storeId) ?? 1.0);
+    }
+
+    /**
+     * Get default package length (inches)
+     */
+    public function getDefaultLength(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_length', $storeId) ?? 10.0);
+    }
+
+    /**
+     * Get default package width (inches)
+     */
+    public function getDefaultWidth(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_width', $storeId) ?? 6.0);
+    }
+
+    /**
+     * Get default package height (inches)
+     */
+    public function getDefaultHeight(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_height', $storeId) ?? 4.0);
+    }
+
+    /**
+     * Check if label credentials are configured
+     */
+    public function hasLabelCredentials(?int $storeId = null): bool
+    {
+        return $this->hasCredentials($storeId)
+            && !empty($this->getCrid($storeId))
+            && !empty($this->getMid($storeId))
+            && !empty($this->getPaymentAccountNumber($storeId));
     }
 }

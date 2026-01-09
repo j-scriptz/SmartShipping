@@ -25,4 +25,32 @@
         </resources>
     </route>
 
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Shipment Automation Endpoints
+         ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Create shipment with label -->
+    <route url="/V1/smartshipping/shipment/label/:orderId" method="POST">
+        <service class="Jscriptz\SmartShipping\Api\ShipmentServiceInterface" method="createWithLabel"/>
+        <resources>
+            <resource ref="Magento_Sales::ship"/>
+        </resources>
+    </route>
+
+    <!-- Create shipment with manual tracking number -->
+    <route url="/V1/smartshipping/shipment/tracking/:orderId" method="POST">
+        <service class="Jscriptz\SmartShipping\Api\ShipmentServiceInterface" method="createWithTracking"/>
+        <resources>
+            <resource ref="Magento_Sales::ship"/>
+        </resources>
+    </route>
+
+    <!-- Check if label is available for an order -->
+    <route url="/V1/smartshipping/shipment/label-available/:orderId" method="GET">
+        <service class="Jscriptz\SmartShipping\Api\ShipmentServiceInterface" method="isLabelAvailable"/>
+        <resources>
+            <resource ref="Magento_Sales::ship"/>
+        </resources>
+    </route>
+
 </routes>

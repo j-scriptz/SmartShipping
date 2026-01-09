@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Jscriptz SmartShipping - Default Configuration Values
+ * Jscriptz SmartShip - Default Configuration Values
  *
  * Combined defaults for USPS, UPS, and FedEx carriers
  */
@@ -18,6 +18,8 @@
                 <active>0</active>
                 <title>USPS</title>
                 <environment>sandbox</environment>
+                <sandbox_url>https://apis-tem.usps.com</sandbox_url>
+                <production_url>https://api.usps.com</production_url>
                 <model>Jscriptz\SmartShipping\Model\Usps\Carrier</model>
 
                 <!-- Credentials -->
@@ -51,6 +53,19 @@
                 <showmethod>0</showmethod>
                 <sort_order>30</sort_order>
 
+                <!-- Label Generation -->
+                <label_enabled>0</label_enabled>
+                <payment_account_type>EPS</payment_account_type>
+                <payment_account_number backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <crid/>
+                <mid/>
+                <manifest_mid/>
+                <label_format>PDF</label_format>
+                <default_weight>1</default_weight>
+                <default_length>12</default_length>
+                <default_width>9</default_width>
+                <default_height>6</default_height>
+
                 <!-- Developer -->
                 <debug>0</debug>
             </uspsv3>
@@ -64,6 +79,8 @@
                 <title>UPS</title>
                 <name>UPS Shipping</name>
                 <environment>sandbox</environment>
+                <sandbox_url>https://wwwcie.ups.com</sandbox_url>
+                <production_url>https://onlinetools.ups.com</production_url>
                 <model>Jscriptz\SmartShipping\Model\Ups\Carrier</model>
 
                 <!-- Credentials -->
@@ -113,6 +130,8 @@
                 <active>0</active>
                 <title>FedEx</title>
                 <environment>sandbox</environment>
+                <sandbox_url>https://apis-sandbox.fedex.com</sandbox_url>
+                <production_url>https://apis.fedex.com</production_url>
                 <model>Jscriptz\SmartShipping\Model\Fedex\Carrier</model>
 
                 <!-- Credentials -->
@@ -152,9 +171,19 @@
         </carriers>
 
         <!-- ═══════════════════════════════════════════════════════════════════════
-             Smart Shipping Display Settings Defaults
+             Smart Shipping Settings
              ═══════════════════════════════════════════════════════════════════════ -->
         <smartshipping>
+            <!-- Shipment Automation -->
+            <shipment>
+                <auto_ship_enabled>0</auto_ship_enabled>
+                <auto_ship_trigger>manual</auto_ship_trigger>
+                <send_tracking_email>1</send_tracking_email>
+                <usps_enabled>0</usps_enabled>
+                <ups_enabled>0</ups_enabled>
+                <fedex_enabled>0</fedex_enabled>
+                <debug>0</debug>
+            </shipment>
             <general>
                 <!-- Timezone (empty = use Magento default) -->
                 <timezone/>

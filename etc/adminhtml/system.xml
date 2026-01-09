@@ -9,916 +9,1155 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <!-- SmartShipping Tab -->
-        <tab id="jscriptz_smartshipping" translate="label" sortOrder="300">
-            <label>Smart Shipping</label>
+        <!-- Jscriptz Tab (shared with other Jscriptz extensions) -->
+        <tab id="jscriptz" translate="label" sortOrder="150" class="jscriptz-tab">
+            <label>Jscriptz</label>
         </tab>
 
         <!-- ═══════════════════════════════════════════════════════════════════════
-             USPS Configuration Section
+             SmartShipping Configuration Section
              ═══════════════════════════════════════════════════════════════════════ -->
-        <section id="smartshipping_usps" translate="label" sortOrder="10"
+        <section id="smartshipping" translate="label" sortOrder="25"
                  showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>USPS</label>
-            <tab>jscriptz_smartshipping</tab>
+            <label>Jscriptz SmartShipping</label>
+            <tab>jscriptz</tab>
             <resource>Magento_Config::config_shipping</resource>
 
-            <!-- General Settings -->
-            <group id="general" translate="label" type="text" sortOrder="10"
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 USPS CARRIER
+                 ═══════════════════════════════════════════════════════════════════ -->
+            <group id="usps" translate="label" type="text" sortOrder="10"
                    showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>General Settings</label>
+                <label>USPS</label>
 
-                <field id="active" translate="label" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>carriers/uspsv3/active</config_path>
-                </field>
-                <field id="title" translate="label" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Title</label>
-                    <config_path>carriers/uspsv3/title</config_path>
-                </field>
-                <field id="environment" translate="label comment" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Environment</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Usps\Config\Source\Environment</source_model>
-                    <comment>Use Sandbox (TEM) for testing, Production for live rates</comment>
-                    <config_path>carriers/uspsv3/environment</config_path>
-                </field>
-            </group>
+                <!-- General Settings -->
+                <group id="general" translate="label" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>General Settings</label>
 
-            <!-- API Credentials -->
-            <group id="credentials" translate="label" type="text" sortOrder="20"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>API Credentials</label>
+                    <field id="active" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>carriers/uspsv3/active</config_path>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Title</label>
+                        <config_path>carriers/uspsv3/title</config_path>
+                    </field>
+                    <field id="environment" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Environment</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Usps\Config\Source\Environment</source_model>
+                        <comment>Use Sandbox (TEM) for testing, Production for live rates</comment>
+                        <config_path>carriers/uspsv3/environment</config_path>
+                    </field>
+                    <field id="sandbox_url" translate="label comment" type="text" sortOrder="35"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Sandbox URL</label>
+                        <frontend_model>Jscriptz\SmartShipping\Block\Adminhtml\System\Config\Form\Field\Disabled</frontend_model>
+                        <comment>API endpoint for testing (read-only)</comment>
+                        <config_path>carriers/uspsv3/sandbox_url</config_path>
+                    </field>
+                    <field id="production_url" translate="label comment" type="text" sortOrder="36"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Production URL</label>
+                        <frontend_model>Jscriptz\SmartShipping\Block\Adminhtml\System\Config\Form\Field\Disabled</frontend_model>
+                        <comment>API endpoint for live transactions (read-only)</comment>
+                        <config_path>carriers/uspsv3/production_url</config_path>
+                    </field>
+                </group>
 
-                <field id="developer_portal" translate="label comment" type="note" sortOrder="5"
+                <!-- API Credentials -->
+                <group id="credentials" translate="label" type="text" sortOrder="20"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Developer Portal</label>
-                    <comment><![CDATA[Get your API credentials from the <a href="https://developers.usps.com" target="_blank" style="color:#006bb4;text-decoration:underline;">USPS Developer Portal</a>]]></comment>
-                </field>
-                <field id="consumer_key" translate="label comment" type="obscure" sortOrder="10"
+                    <label>API Credentials</label>
+
+                    <field id="developer_portal" translate="label comment" type="note" sortOrder="5"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Developer Portal</label>
+                        <comment><![CDATA[Get your API credentials from the <a href="https://developers.usps.com" target="_blank" style="color:#006bb4;text-decoration:underline;">USPS Developer Portal</a>]]></comment>
+                    </field>
+                    <field id="consumer_key" translate="label comment" type="obscure" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Consumer Key</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>Consumer Key from USPS Business Customer Gateway</comment>
+                        <config_path>carriers/uspsv3/consumer_key</config_path>
+                    </field>
+                    <field id="consumer_secret" translate="label comment" type="obscure" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Consumer Secret</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>Consumer Secret from USPS Business Customer Gateway</comment>
+                        <config_path>carriers/uspsv3/consumer_secret</config_path>
+                    </field>
+                </group>
+
+                <!-- Shipping Options -->
+                <group id="shipping" translate="label" type="text" sortOrder="30"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Consumer Key</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>Consumer Key from USPS Business Customer Gateway</comment>
-                    <config_path>carriers/uspsv3/consumer_key</config_path>
-                </field>
-                <field id="consumer_secret" translate="label comment" type="obscure" sortOrder="20"
+                    <label>Shipping Options</label>
+
+                    <field id="allowed_methods" translate="label" type="multiselect" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Allowed Methods</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Usps\Config\Source\MailClass</source_model>
+                        <can_be_empty>1</can_be_empty>
+                        <config_path>carriers/uspsv3/allowed_methods</config_path>
+                    </field>
+                    <field id="price_type" translate="label comment" type="select" sortOrder="15"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Price Type</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Usps\Config\Source\PriceType</source_model>
+                        <comment>RETAIL for standard pricing, COMMERCIAL for business rates</comment>
+                        <config_path>carriers/uspsv3/price_type</config_path>
+                    </field>
+                    <field id="max_weight" translate="label comment" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Maximum Package Weight (lbs)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>USPS limit is 70 lbs for most services</comment>
+                        <config_path>carriers/uspsv3/max_weight</config_path>
+                    </field>
+                    <field id="handling_fee" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Handling Fee</label>
+                        <validate>validate-number</validate>
+                        <comment>Added to each shipping rate</comment>
+                        <config_path>carriers/uspsv3/handling_fee</config_path>
+                    </field>
+                    <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Free Shipping Threshold</label>
+                        <validate>validate-number</validate>
+                        <comment>Cart subtotal for free shipping (0 = disabled)</comment>
+                        <config_path>carriers/uspsv3/free_shipping_threshold</config_path>
+                    </field>
+                    <field id="cutoff_time" translate="label comment" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Cutoff Time</label>
+                        <comment>Orders placed after this time ship next business day (HH:MM format)</comment>
+                        <config_path>carriers/uspsv3/cutoff_time</config_path>
+                    </field>
+                    <field id="method_cutoffs" translate="label comment" type="textarea" sortOrder="52"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Per-Method Cutoff Times</label>
+                        <comment><![CDATA[JSON format: {"METHOD_CODE": "HH:MM", ...}<br/>Example: {"PRIORITY_MAIL": "16:00", "GROUND_ADVANTAGE": "14:00"}<br/>Methods not listed use the global Cutoff Time above.]]></comment>
+                        <config_path>carriers/uspsv3/method_cutoffs</config_path>
+                    </field>
+                    <field id="pickup_days" translate="label comment" type="multiselect" sortOrder="55"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Pickup Days</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\Weekdays</source_model>
+                        <comment>Days when USPS picks up from your location</comment>
+                        <config_path>carriers/uspsv3/pickup_days</config_path>
+                    </field>
+                    <field id="pickup_time" translate="label comment" type="text" sortOrder="57"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Pickup Time</label>
+                        <comment>Time when carrier picks up (HH:MM format). Orders after this time ship next pickup day.</comment>
+                        <config_path>carriers/uspsv3/pickup_time</config_path>
+                    </field>
+                    <field id="grace_period" translate="label comment" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Grace Period</label>
+                        <validate>validate-number validate-zero-or-greater</validate>
+                        <comment>Processing time before order ships (added to transit time)</comment>
+                        <config_path>carriers/uspsv3/grace_period</config_path>
+                    </field>
+                    <field id="grace_period_unit" translate="label" type="select" sortOrder="65"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Grace Period Unit</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\GracePeriodUnit</source_model>
+                        <config_path>carriers/uspsv3/grace_period_unit</config_path>
+                    </field>
+                </group>
+
+                <!-- Rate Caching -->
+                <group id="caching" translate="label" type="text" sortOrder="40"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Consumer Secret</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>Consumer Secret from USPS Business Customer Gateway</comment>
-                    <config_path>carriers/uspsv3/consumer_secret</config_path>
-                </field>
-            </group>
+                    <label>Rate Caching</label>
 
-            <!-- Shipping Options -->
-            <group id="shipping" translate="label" type="text" sortOrder="30"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Shipping Options</label>
+                    <field id="cache_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Rate Caching</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Cache API responses to improve performance</comment>
+                        <config_path>carriers/uspsv3/cache_enabled</config_path>
+                    </field>
+                    <field id="cache_ttl" translate="label comment" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Cache TTL (seconds)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>How long to cache rates (default: 3600 = 1 hour)</comment>
+                        <config_path>carriers/uspsv3/cache_ttl</config_path>
+                        <depends>
+                            <field id="cache_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cache_fallback" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Use Cache on API Failure</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Return cached rates if USPS API is unavailable</comment>
+                        <config_path>carriers/uspsv3/cache_fallback</config_path>
+                        <depends>
+                            <field id="cache_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
 
-                <field id="allowed_methods" translate="label" type="multiselect" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Allowed Methods</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Usps\Config\Source\MailClass</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>carriers/uspsv3/allowed_methods</config_path>
-                </field>
-                <field id="price_type" translate="label comment" type="select" sortOrder="15"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Price Type</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Usps\Config\Source\PriceType</source_model>
-                    <comment>RETAIL for standard pricing, COMMERCIAL for business rates</comment>
-                    <config_path>carriers/uspsv3/price_type</config_path>
-                </field>
-                <field id="max_weight" translate="label comment" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Maximum Package Weight (lbs)</label>
-                    <validate>validate-number validate-greater-than-zero</validate>
-                    <comment>USPS limit is 70 lbs for most services</comment>
-                    <config_path>carriers/uspsv3/max_weight</config_path>
-                </field>
-                <field id="handling_fee" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Handling Fee</label>
-                    <validate>validate-number</validate>
-                    <comment>Added to each shipping rate</comment>
-                    <config_path>carriers/uspsv3/handling_fee</config_path>
-                </field>
-                <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Free Shipping Threshold</label>
-                    <validate>validate-number</validate>
-                    <comment>Cart subtotal for free shipping (0 = disabled)</comment>
-                    <config_path>carriers/uspsv3/free_shipping_threshold</config_path>
-                </field>
-                <field id="cutoff_time" translate="label comment" type="text" sortOrder="50"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Cutoff Time</label>
-                    <comment>Orders placed after this time ship next business day (HH:MM format)</comment>
-                    <config_path>carriers/uspsv3/cutoff_time</config_path>
-                </field>
-                <field id="method_cutoffs" translate="label comment" type="textarea" sortOrder="52"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Per-Method Cutoff Times</label>
-                    <comment><![CDATA[JSON format: {"METHOD_CODE": "HH:MM", ...}<br/>Example: {"PRIORITY_MAIL": "16:00", "GROUND_ADVANTAGE": "14:00"}<br/>Methods not listed use the global Cutoff Time above.]]></comment>
-                    <config_path>carriers/uspsv3/method_cutoffs</config_path>
-                </field>
-                <field id="pickup_days" translate="label comment" type="multiselect" sortOrder="55"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Pickup Days</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\Weekdays</source_model>
-                    <comment>Days when USPS picks up from your location</comment>
-                    <config_path>carriers/uspsv3/pickup_days</config_path>
-                </field>
-                <field id="pickup_time" translate="label comment" type="text" sortOrder="57"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Pickup Time</label>
-                    <comment>Time when carrier picks up (HH:MM format). Orders after this time ship next pickup day.</comment>
-                    <config_path>carriers/uspsv3/pickup_time</config_path>
-                </field>
-                <field id="grace_period" translate="label comment" type="text" sortOrder="60"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Grace Period</label>
-                    <validate>validate-number validate-zero-or-greater</validate>
-                    <comment>Processing time before order ships (added to transit time)</comment>
-                    <config_path>carriers/uspsv3/grace_period</config_path>
-                </field>
-                <field id="grace_period_unit" translate="label" type="select" sortOrder="65"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Grace Period Unit</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\GracePeriodUnit</source_model>
-                    <config_path>carriers/uspsv3/grace_period_unit</config_path>
-                </field>
-            </group>
-
-            <!-- Rate Caching -->
-            <group id="caching" translate="label" type="text" sortOrder="40"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Rate Caching</label>
-
-                <field id="cache_enabled" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Enable Rate Caching</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Cache API responses to improve performance</comment>
-                    <config_path>carriers/uspsv3/cache_enabled</config_path>
-                </field>
-                <field id="cache_ttl" translate="label comment" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Cache TTL (seconds)</label>
-                    <validate>validate-number validate-greater-than-zero</validate>
-                    <comment>How long to cache rates (default: 3600 = 1 hour)</comment>
-                    <config_path>carriers/uspsv3/cache_ttl</config_path>
-                    <depends>
-                        <field id="cache_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cache_fallback" translate="label comment" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Use Cache on API Failure</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Return cached rates if USPS API is unavailable</comment>
-                    <config_path>carriers/uspsv3/cache_fallback</config_path>
-                    <depends>
-                        <field id="cache_enabled">1</field>
-                    </depends>
-                </field>
-            </group>
-
-            <!-- Shipping Restrictions -->
-            <group id="restrictions" translate="label" type="text" sortOrder="50"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Shipping Restrictions</label>
-
-                <field id="sallowspecific" translate="label" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Ship to Applicable Countries</label>
-                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
-                    <config_path>carriers/uspsv3/sallowspecific</config_path>
-                </field>
-                <field id="specificcountry" translate="label" type="multiselect" sortOrder="20"
+                <!-- Shipping Restrictions -->
+                <group id="restrictions" translate="label" type="text" sortOrder="50"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Ship to Specific Countries</label>
-                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>carriers/uspsv3/specificcountry</config_path>
-                    <depends>
-                        <field id="sallowspecific">1</field>
-                    </depends>
-                </field>
-                <field id="showmethod" translate="label" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Show Method if Not Applicable</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>carriers/uspsv3/showmethod</config_path>
-                </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Sort Order</label>
-                    <validate>validate-number</validate>
-                    <config_path>carriers/uspsv3/sort_order</config_path>
-                </field>
+                    <label>Shipping Restrictions</label>
+
+                    <field id="sallowspecific" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Ship to Applicable Countries</label>
+                        <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>carriers/uspsv3/sallowspecific</config_path>
+                    </field>
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Ship to Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <can_be_empty>1</can_be_empty>
+                        <config_path>carriers/uspsv3/specificcountry</config_path>
+                        <depends>
+                            <field id="sallowspecific">1</field>
+                        </depends>
+                    </field>
+                    <field id="showmethod" translate="label" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Show Method if Not Applicable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>carriers/uspsv3/showmethod</config_path>
+                    </field>
+                    <field id="sort_order" translate="label" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Sort Order</label>
+                        <validate>validate-number</validate>
+                        <config_path>carriers/uspsv3/sort_order</config_path>
+                    </field>
+                </group>
+
+                <!-- Label Generation -->
+                <group id="label" translate="label comment" type="text" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Label Generation</label>
+                    <comment><![CDATA[<strong>Important:</strong> Label generation requires additional USPS API access. You must be enrolled in USPS Ship (outbound + returns) and have an Enterprise Payment Account. <a href="https://developers.usps.com/getting-started" target="_blank">Request API access here</a>.]]></comment>
+
+                    <field id="label_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Label Generation</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Generate shipping labels via USPS Labels API</comment>
+                        <config_path>carriers/uspsv3/label_enabled</config_path>
+                    </field>
+                    <field id="payment_account_type" translate="label comment" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Payment Account Type</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Shipment\Config\Source\PaymentType</source_model>
+                        <comment>EPS (Enterprise Payment System) or Permit</comment>
+                        <config_path>carriers/uspsv3/payment_account_type</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="payment_account_number" translate="label comment" type="obscure" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Account Number</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>Your EPS or Permit account number</comment>
+                        <config_path>carriers/uspsv3/payment_account_number</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="crid" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Customer Registration ID (CRID)</label>
+                        <comment>From USPS Business Customer Gateway profile</comment>
+                        <config_path>carriers/uspsv3/crid</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="mid" translate="label comment" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Mailer ID (MID)</label>
+                        <comment>Must be enrolled in USPS Ship Outbound</comment>
+                        <config_path>carriers/uspsv3/mid</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="manifest_mid" translate="label comment" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Manifest MID</label>
+                        <comment>Usually same as Mailer ID</comment>
+                        <config_path>carriers/uspsv3/manifest_mid</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="label_format" translate="label" type="select" sortOrder="70"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Label Format</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Shipment\Config\Source\LabelFormat</source_model>
+                        <config_path>carriers/uspsv3/label_format</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_weight" translate="label comment" type="text" sortOrder="80"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Weight (lbs)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>Used when order items have no weight</comment>
+                        <config_path>carriers/uspsv3/default_weight</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_length" translate="label" type="text" sortOrder="90"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Length (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/uspsv3/default_length</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_width" translate="label" type="text" sortOrder="100"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Width (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/uspsv3/default_width</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_height" translate="label" type="text" sortOrder="110"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Height (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/uspsv3/default_height</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Developer Settings -->
+                <group id="developer" translate="label" type="text" sortOrder="70"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Developer Settings</label>
+
+                    <field id="debug" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                        <label>Debug Mode</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Log API requests and responses to var/log/uspsv3.log</comment>
+                        <config_path>carriers/uspsv3/debug</config_path>
+                    </field>
+                </group>
             </group>
 
-            <!-- Developer Settings -->
-            <group id="developer" translate="label" type="text" sortOrder="60"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Developer Settings</label>
-
-                <field id="debug" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
-                    <label>Debug Mode</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Log API requests and responses to var/log/uspsv3.log</comment>
-                    <config_path>carriers/uspsv3/debug</config_path>
-                </field>
-            </group>
-        </section>
-
-        <!-- ═══════════════════════════════════════════════════════════════════════
-             UPS Configuration Section
-             ═══════════════════════════════════════════════════════════════════════ -->
-        <section id="smartshipping_ups" translate="label" sortOrder="20"
-                 showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>UPS</label>
-            <tab>jscriptz_smartshipping</tab>
-            <resource>Magento_Config::config_shipping</resource>
-
-            <!-- General Settings -->
-            <group id="general" translate="label" type="text" sortOrder="10"
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 UPS CARRIER
+                 ═══════════════════════════════════════════════════════════════════ -->
+            <group id="ups" translate="label" type="text" sortOrder="20"
                    showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>General Settings</label>
+                <label>UPS</label>
 
-                <field id="active" translate="label" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>carriers/upsv3/active</config_path>
-                </field>
-                <field id="title" translate="label" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Title</label>
-                    <config_path>carriers/upsv3/title</config_path>
-                </field>
-                <field id="environment" translate="label comment" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Environment</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Ups\Config\Source\Environment</source_model>
-                    <comment>Use Sandbox for testing, Production for live rates</comment>
-                    <config_path>carriers/upsv3/environment</config_path>
-                </field>
-            </group>
+                <!-- General Settings -->
+                <group id="general" translate="label" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>General Settings</label>
 
-            <!-- API Credentials -->
-            <group id="credentials" translate="label" type="text" sortOrder="20"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>API Credentials</label>
+                    <field id="active" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>carriers/upsv3/active</config_path>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Title</label>
+                        <config_path>carriers/upsv3/title</config_path>
+                    </field>
+                    <field id="environment" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Environment</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Ups\Config\Source\Environment</source_model>
+                        <comment>Use Sandbox for testing, Production for live rates</comment>
+                        <config_path>carriers/upsv3/environment</config_path>
+                    </field>
+                    <field id="sandbox_url" translate="label comment" type="text" sortOrder="35"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Sandbox URL</label>
+                        <frontend_model>Jscriptz\SmartShipping\Block\Adminhtml\System\Config\Form\Field\Disabled</frontend_model>
+                        <comment>API endpoint for testing (read-only)</comment>
+                        <config_path>carriers/upsv3/sandbox_url</config_path>
+                    </field>
+                    <field id="production_url" translate="label comment" type="text" sortOrder="36"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Production URL</label>
+                        <frontend_model>Jscriptz\SmartShipping\Block\Adminhtml\System\Config\Form\Field\Disabled</frontend_model>
+                        <comment>API endpoint for live transactions (read-only)</comment>
+                        <config_path>carriers/upsv3/production_url</config_path>
+                    </field>
+                </group>
 
-                <field id="developer_portal" translate="label comment" type="note" sortOrder="5"
+                <!-- API Credentials -->
+                <group id="credentials" translate="label" type="text" sortOrder="20"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Developer Portal</label>
-                    <comment><![CDATA[Get your API credentials from the <a href="https://developer.ups.com" target="_blank" style="color:#006bb4;text-decoration:underline;">UPS Developer Portal</a>]]></comment>
-                </field>
-                <field id="client_id" translate="label comment" type="obscure" sortOrder="10"
+                    <label>API Credentials</label>
+
+                    <field id="developer_portal" translate="label comment" type="note" sortOrder="5"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Developer Portal</label>
+                        <comment><![CDATA[Get your API credentials from the <a href="https://developer.ups.com" target="_blank" style="color:#006bb4;text-decoration:underline;">UPS Developer Portal</a>]]></comment>
+                    </field>
+                    <field id="client_id" translate="label comment" type="obscure" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Client ID</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>OAuth2 Client ID from UPS Developer Portal</comment>
+                        <config_path>carriers/upsv3/client_id</config_path>
+                    </field>
+                    <field id="client_secret" translate="label comment" type="obscure" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Client Secret</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>OAuth2 Client Secret from UPS Developer Portal</comment>
+                        <config_path>carriers/upsv3/client_secret</config_path>
+                    </field>
+                    <field id="account_number" translate="label comment" type="obscure" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Account Number</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>Your UPS Account Number (shipper number)</comment>
+                        <config_path>carriers/upsv3/account_number</config_path>
+                    </field>
+                </group>
+
+                <!-- Shipping Options -->
+                <group id="shipping" translate="label" type="text" sortOrder="30"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Client ID</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>OAuth2 Client ID from UPS Developer Portal</comment>
-                    <config_path>carriers/upsv3/client_id</config_path>
-                </field>
-                <field id="client_secret" translate="label comment" type="obscure" sortOrder="20"
+                    <label>Shipping Options</label>
+
+                    <field id="allowed_methods" translate="label" type="multiselect" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Allowed Methods</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Ups\Config\Source\ServiceType</source_model>
+                        <can_be_empty>1</can_be_empty>
+                        <config_path>carriers/upsv3/allowed_methods</config_path>
+                    </field>
+                    <field id="package_type" translate="label" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Type</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Ups\Config\Source\PackagingType</source_model>
+                        <config_path>carriers/upsv3/package_type</config_path>
+                    </field>
+                    <field id="max_weight" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Maximum Package Weight (lbs)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>UPS limit is 150 lbs for most services</comment>
+                        <config_path>carriers/upsv3/max_weight</config_path>
+                    </field>
+                    <field id="handling_fee" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Handling Fee</label>
+                        <validate>validate-number</validate>
+                        <comment>Added to each shipping rate</comment>
+                        <config_path>carriers/upsv3/handling_fee</config_path>
+                    </field>
+                    <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Free Shipping Threshold</label>
+                        <validate>validate-number</validate>
+                        <comment>Cart subtotal for free shipping (0 = disabled)</comment>
+                        <config_path>carriers/upsv3/free_shipping_threshold</config_path>
+                    </field>
+                </group>
+
+                <!-- Rate Caching -->
+                <group id="caching" translate="label" type="text" sortOrder="40"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Client Secret</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>OAuth2 Client Secret from UPS Developer Portal</comment>
-                    <config_path>carriers/upsv3/client_secret</config_path>
-                </field>
-                <field id="account_number" translate="label comment" type="obscure" sortOrder="30"
+                    <label>Rate Caching</label>
+
+                    <field id="cache_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Rate Caching</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Cache API responses to improve performance</comment>
+                        <config_path>carriers/upsv3/cache_enabled</config_path>
+                    </field>
+                    <field id="cache_ttl" translate="label comment" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Cache TTL (seconds)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>How long to cache rates (default: 3600 = 1 hour)</comment>
+                        <config_path>carriers/upsv3/cache_ttl</config_path>
+                        <depends>
+                            <field id="cache_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cache_fallback" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Use Cache on API Failure</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Return cached rates if UPS API is unavailable</comment>
+                        <config_path>carriers/upsv3/cache_fallback</config_path>
+                        <depends>
+                            <field id="cache_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Time in Transit -->
+                <group id="transit" translate="label" type="text" sortOrder="50"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Account Number</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>Your UPS Account Number (shipper number)</comment>
-                    <config_path>carriers/upsv3/account_number</config_path>
-                </field>
-            </group>
+                    <label>Time in Transit</label>
 
-            <!-- Shipping Options -->
-            <group id="shipping" translate="label" type="text" sortOrder="30"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Shipping Options</label>
+                    <field id="transit_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Show Delivery Dates</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Display estimated delivery dates with shipping methods</comment>
+                        <config_path>carriers/upsv3/transit_enabled</config_path>
+                    </field>
+                    <field id="pickup_days" translate="label comment" type="multiselect" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Pickup Days</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\Weekdays</source_model>
+                        <comment>Days when UPS picks up from your location</comment>
+                        <config_path>carriers/upsv3/pickup_days</config_path>
+                        <depends>
+                            <field id="transit_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="pickup_time" translate="label comment" type="text" sortOrder="25"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Pickup Time</label>
+                        <comment>Time when carrier picks up (HH:MM format). Orders after this time ship next pickup day.</comment>
+                        <config_path>carriers/upsv3/pickup_time</config_path>
+                        <depends>
+                            <field id="transit_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cutoff_time" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Cutoff Time</label>
+                        <comment>Orders placed after this time ship next business day (HH:MM format)</comment>
+                        <config_path>carriers/upsv3/cutoff_time</config_path>
+                        <depends>
+                            <field id="transit_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="method_cutoffs" translate="label comment" type="textarea" sortOrder="35"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Per-Method Cutoff Times</label>
+                        <comment><![CDATA[JSON format: {"METHOD_CODE": "HH:MM", ...}<br/>Example: {"03": "16:00", "02": "18:00"} (03=Ground, 02=2nd Day Air)<br/>Methods not listed use the global Cutoff Time above.]]></comment>
+                        <config_path>carriers/upsv3/method_cutoffs</config_path>
+                        <depends>
+                            <field id="transit_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="grace_period" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Grace Period</label>
+                        <validate>validate-number validate-zero-or-greater</validate>
+                        <comment>Processing time before order ships (added to transit time)</comment>
+                        <config_path>carriers/upsv3/grace_period</config_path>
+                        <depends>
+                            <field id="transit_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="grace_period_unit" translate="label" type="select" sortOrder="45"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Grace Period Unit</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\GracePeriodUnit</source_model>
+                        <config_path>carriers/upsv3/grace_period_unit</config_path>
+                        <depends>
+                            <field id="transit_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
 
-                <field id="allowed_methods" translate="label" type="multiselect" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Allowed Methods</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Ups\Config\Source\ServiceType</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>carriers/upsv3/allowed_methods</config_path>
-                </field>
-                <field id="package_type" translate="label" type="select" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Default Package Type</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Ups\Config\Source\PackagingType</source_model>
-                    <config_path>carriers/upsv3/package_type</config_path>
-                </field>
-                <field id="max_weight" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Maximum Package Weight (lbs)</label>
-                    <validate>validate-number validate-greater-than-zero</validate>
-                    <comment>UPS limit is 150 lbs for most services</comment>
-                    <config_path>carriers/upsv3/max_weight</config_path>
-                </field>
-                <field id="handling_fee" translate="label comment" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Handling Fee</label>
-                    <validate>validate-number</validate>
-                    <comment>Added to each shipping rate</comment>
-                    <config_path>carriers/upsv3/handling_fee</config_path>
-                </field>
-                <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="50"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Free Shipping Threshold</label>
-                    <validate>validate-number</validate>
-                    <comment>Cart subtotal for free shipping (0 = disabled)</comment>
-                    <config_path>carriers/upsv3/free_shipping_threshold</config_path>
-                </field>
-            </group>
-
-            <!-- Rate Caching -->
-            <group id="caching" translate="label" type="text" sortOrder="40"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Rate Caching</label>
-
-                <field id="cache_enabled" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Enable Rate Caching</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Cache API responses to improve performance</comment>
-                    <config_path>carriers/upsv3/cache_enabled</config_path>
-                </field>
-                <field id="cache_ttl" translate="label comment" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Cache TTL (seconds)</label>
-                    <validate>validate-number validate-greater-than-zero</validate>
-                    <comment>How long to cache rates (default: 3600 = 1 hour)</comment>
-                    <config_path>carriers/upsv3/cache_ttl</config_path>
-                    <depends>
-                        <field id="cache_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cache_fallback" translate="label comment" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Use Cache on API Failure</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Return cached rates if UPS API is unavailable</comment>
-                    <config_path>carriers/upsv3/cache_fallback</config_path>
-                    <depends>
-                        <field id="cache_enabled">1</field>
-                    </depends>
-                </field>
-            </group>
-
-            <!-- Time in Transit -->
-            <group id="transit" translate="label" type="text" sortOrder="50"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Time in Transit</label>
-
-                <field id="transit_enabled" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Show Delivery Dates</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Display estimated delivery dates with shipping methods</comment>
-                    <config_path>carriers/upsv3/transit_enabled</config_path>
-                </field>
-                <field id="pickup_days" translate="label comment" type="multiselect" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Pickup Days</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\Weekdays</source_model>
-                    <comment>Days when UPS picks up from your location</comment>
-                    <config_path>carriers/upsv3/pickup_days</config_path>
-                    <depends>
-                        <field id="transit_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="pickup_time" translate="label comment" type="text" sortOrder="25"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Pickup Time</label>
-                    <comment>Time when carrier picks up (HH:MM format). Orders after this time ship next pickup day.</comment>
-                    <config_path>carriers/upsv3/pickup_time</config_path>
-                    <depends>
-                        <field id="transit_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cutoff_time" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Cutoff Time</label>
-                    <comment>Orders placed after this time ship next business day (HH:MM format)</comment>
-                    <config_path>carriers/upsv3/cutoff_time</config_path>
-                    <depends>
-                        <field id="transit_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="method_cutoffs" translate="label comment" type="textarea" sortOrder="35"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Per-Method Cutoff Times</label>
-                    <comment><![CDATA[JSON format: {"METHOD_CODE": "HH:MM", ...}<br/>Example: {"03": "16:00", "02": "18:00"} (03=Ground, 02=2nd Day Air)<br/>Methods not listed use the global Cutoff Time above.]]></comment>
-                    <config_path>carriers/upsv3/method_cutoffs</config_path>
-                    <depends>
-                        <field id="transit_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="grace_period" translate="label comment" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Grace Period</label>
-                    <validate>validate-number validate-zero-or-greater</validate>
-                    <comment>Processing time before order ships (added to transit time)</comment>
-                    <config_path>carriers/upsv3/grace_period</config_path>
-                    <depends>
-                        <field id="transit_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="grace_period_unit" translate="label" type="select" sortOrder="45"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Grace Period Unit</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\GracePeriodUnit</source_model>
-                    <config_path>carriers/upsv3/grace_period_unit</config_path>
-                    <depends>
-                        <field id="transit_enabled">1</field>
-                    </depends>
-                </field>
-            </group>
-
-            <!-- Shipping Restrictions -->
-            <group id="restrictions" translate="label" type="text" sortOrder="60"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Shipping Restrictions</label>
-
-                <field id="sallowspecific" translate="label" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Ship to Applicable Countries</label>
-                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
-                    <config_path>carriers/upsv3/sallowspecific</config_path>
-                </field>
-                <field id="specificcountry" translate="label" type="multiselect" sortOrder="20"
+                <!-- Shipping Restrictions -->
+                <group id="restrictions" translate="label" type="text" sortOrder="60"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Ship to Specific Countries</label>
-                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>carriers/upsv3/specificcountry</config_path>
-                    <depends>
-                        <field id="sallowspecific">1</field>
-                    </depends>
-                </field>
-                <field id="showmethod" translate="label" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Show Method if Not Applicable</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>carriers/upsv3/showmethod</config_path>
-                </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Sort Order</label>
-                    <validate>validate-number</validate>
-                    <config_path>carriers/upsv3/sort_order</config_path>
-                </field>
+                    <label>Shipping Restrictions</label>
+
+                    <field id="sallowspecific" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Ship to Applicable Countries</label>
+                        <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>carriers/upsv3/sallowspecific</config_path>
+                    </field>
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Ship to Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <can_be_empty>1</can_be_empty>
+                        <config_path>carriers/upsv3/specificcountry</config_path>
+                        <depends>
+                            <field id="sallowspecific">1</field>
+                        </depends>
+                    </field>
+                    <field id="showmethod" translate="label" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Show Method if Not Applicable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>carriers/upsv3/showmethod</config_path>
+                    </field>
+                    <field id="sort_order" translate="label" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Sort Order</label>
+                        <validate>validate-number</validate>
+                        <config_path>carriers/upsv3/sort_order</config_path>
+                    </field>
+                </group>
+
+                <!-- Developer Settings -->
+                <group id="developer" translate="label" type="text" sortOrder="70"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Developer Settings</label>
+
+                    <field id="debug" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                        <label>Debug Mode</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Log API requests and responses to var/log/upsv3.log</comment>
+                        <config_path>carriers/upsv3/debug</config_path>
+                    </field>
+                </group>
             </group>
 
-            <!-- Developer Settings -->
-            <group id="developer" translate="label" type="text" sortOrder="70"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Developer Settings</label>
-
-                <field id="debug" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
-                    <label>Debug Mode</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Log API requests and responses to var/log/upsv3.log</comment>
-                    <config_path>carriers/upsv3/debug</config_path>
-                </field>
-            </group>
-        </section>
-
-        <!-- ═══════════════════════════════════════════════════════════════════════
-             FedEx Configuration Section
-             ═══════════════════════════════════════════════════════════════════════ -->
-        <section id="smartshipping_fedex" translate="label" sortOrder="30"
-                 showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>FedEx</label>
-            <tab>jscriptz_smartshipping</tab>
-            <resource>Magento_Config::config_shipping</resource>
-
-            <!-- General Settings -->
-            <group id="general" translate="label" type="text" sortOrder="10"
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 FEDEX CARRIER
+                 ═══════════════════════════════════════════════════════════════════ -->
+            <group id="fedex" translate="label" type="text" sortOrder="30"
                    showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>General Settings</label>
+                <label>FedEx</label>
 
-                <field id="active" translate="label" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>carriers/fedexv3/active</config_path>
-                </field>
-                <field id="title" translate="label" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Title</label>
-                    <config_path>carriers/fedexv3/title</config_path>
-                </field>
-                <field id="environment" translate="label comment" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Environment</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\Environment</source_model>
-                    <comment>Use Sandbox for testing, Production for live rates</comment>
-                    <config_path>carriers/fedexv3/environment</config_path>
-                </field>
-            </group>
+                <!-- General Settings -->
+                <group id="general" translate="label" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>General Settings</label>
 
-            <!-- API Credentials -->
-            <group id="credentials" translate="label" type="text" sortOrder="20"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>API Credentials</label>
+                    <field id="active" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>carriers/fedexv3/active</config_path>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Title</label>
+                        <config_path>carriers/fedexv3/title</config_path>
+                    </field>
+                    <field id="environment" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Environment</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\Environment</source_model>
+                        <comment>Use Sandbox for testing, Production for live rates</comment>
+                        <config_path>carriers/fedexv3/environment</config_path>
+                    </field>
+                    <field id="sandbox_url" translate="label comment" type="text" sortOrder="35"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Sandbox URL</label>
+                        <frontend_model>Jscriptz\SmartShipping\Block\Adminhtml\System\Config\Form\Field\Disabled</frontend_model>
+                        <comment>API endpoint for testing (read-only)</comment>
+                        <config_path>carriers/fedexv3/sandbox_url</config_path>
+                    </field>
+                    <field id="production_url" translate="label comment" type="text" sortOrder="36"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Production URL</label>
+                        <frontend_model>Jscriptz\SmartShipping\Block\Adminhtml\System\Config\Form\Field\Disabled</frontend_model>
+                        <comment>API endpoint for live transactions (read-only)</comment>
+                        <config_path>carriers/fedexv3/production_url</config_path>
+                    </field>
+                </group>
 
-                <field id="developer_portal" translate="label comment" type="note" sortOrder="5"
+                <!-- API Credentials -->
+                <group id="credentials" translate="label" type="text" sortOrder="20"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Developer Portal</label>
-                    <comment><![CDATA[Get your API credentials from the <a href="https://developer.fedex.com" target="_blank" style="color:#006bb4;text-decoration:underline;">FedEx Developer Portal</a>]]></comment>
-                </field>
-                <field id="client_id" translate="label comment" type="obscure" sortOrder="10"
+                    <label>API Credentials</label>
+
+                    <field id="developer_portal" translate="label comment" type="note" sortOrder="5"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Developer Portal</label>
+                        <comment><![CDATA[Get your API credentials from the <a href="https://developer.fedex.com" target="_blank" style="color:#006bb4;text-decoration:underline;">FedEx Developer Portal</a>]]></comment>
+                    </field>
+                    <field id="client_id" translate="label comment" type="obscure" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>API Key (Client ID)</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>API Key from FedEx Developer Portal</comment>
+                        <config_path>carriers/fedexv3/client_id</config_path>
+                    </field>
+                    <field id="client_secret" translate="label comment" type="obscure" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Secret Key (Client Secret)</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>Secret Key from FedEx Developer Portal</comment>
+                        <config_path>carriers/fedexv3/client_secret</config_path>
+                    </field>
+                    <field id="account_number" translate="label comment" type="obscure" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Account Number</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>Your FedEx Account Number (optional for sandbox)</comment>
+                        <config_path>carriers/fedexv3/account_number</config_path>
+                    </field>
+                </group>
+
+                <!-- Shipping Options -->
+                <group id="shipping" translate="label" type="text" sortOrder="30"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>API Key (Client ID)</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>API Key from FedEx Developer Portal</comment>
-                    <config_path>carriers/fedexv3/client_id</config_path>
-                </field>
-                <field id="client_secret" translate="label comment" type="obscure" sortOrder="20"
+                    <label>Shipping Options</label>
+
+                    <field id="allowed_methods" translate="label" type="multiselect" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Allowed Methods</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\ServiceType</source_model>
+                        <can_be_empty>1</can_be_empty>
+                        <config_path>carriers/fedexv3/allowed_methods</config_path>
+                    </field>
+                    <field id="package_type" translate="label" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Type</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\PackagingType</source_model>
+                        <config_path>carriers/fedexv3/package_type</config_path>
+                    </field>
+                    <field id="max_weight" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Maximum Package Weight (lbs)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>FedEx limit is 150 lbs for most services</comment>
+                        <config_path>carriers/fedexv3/max_weight</config_path>
+                    </field>
+                    <field id="handling_fee" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Handling Fee</label>
+                        <validate>validate-number</validate>
+                        <comment>Added to each shipping rate</comment>
+                        <config_path>carriers/fedexv3/handling_fee</config_path>
+                    </field>
+                    <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Free Shipping Threshold</label>
+                        <validate>validate-number</validate>
+                        <comment>Cart subtotal for free shipping (0 = disabled)</comment>
+                        <config_path>carriers/fedexv3/free_shipping_threshold</config_path>
+                    </field>
+                    <field id="cutoff_time" translate="label comment" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Cutoff Time</label>
+                        <comment>Orders placed after this time ship next business day (HH:MM format)</comment>
+                        <config_path>carriers/fedexv3/cutoff_time</config_path>
+                    </field>
+                    <field id="method_cutoffs" translate="label comment" type="textarea" sortOrder="62"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Per-Method Cutoff Times</label>
+                        <comment><![CDATA[JSON format: {"METHOD_CODE": "HH:MM", ...}<br/>Example: {"FEDEX_GROUND": "14:00", "FEDEX_EXPRESS_SAVER": "18:00"}<br/>Methods not listed use the global Cutoff Time above.]]></comment>
+                        <config_path>carriers/fedexv3/method_cutoffs</config_path>
+                    </field>
+                    <field id="pickup_days" translate="label comment" type="multiselect" sortOrder="65"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Pickup Days</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\Weekdays</source_model>
+                        <comment>Days when FedEx picks up from your location</comment>
+                        <config_path>carriers/fedexv3/pickup_days</config_path>
+                    </field>
+                    <field id="pickup_time" translate="label comment" type="text" sortOrder="67"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Pickup Time</label>
+                        <comment>Time when carrier picks up (HH:MM format). Orders after this time ship next pickup day.</comment>
+                        <config_path>carriers/fedexv3/pickup_time</config_path>
+                    </field>
+                    <field id="grace_period" translate="label comment" type="text" sortOrder="70"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Grace Period</label>
+                        <validate>validate-number validate-zero-or-greater</validate>
+                        <comment>Processing time before order ships (added to transit time)</comment>
+                        <config_path>carriers/fedexv3/grace_period</config_path>
+                    </field>
+                    <field id="grace_period_unit" translate="label" type="select" sortOrder="75"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Grace Period Unit</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\GracePeriodUnit</source_model>
+                        <config_path>carriers/fedexv3/grace_period_unit</config_path>
+                    </field>
+                </group>
+
+                <!-- Rate Caching -->
+                <group id="caching" translate="label" type="text" sortOrder="40"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Secret Key (Client Secret)</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>Secret Key from FedEx Developer Portal</comment>
-                    <config_path>carriers/fedexv3/client_secret</config_path>
-                </field>
-                <field id="account_number" translate="label comment" type="obscure" sortOrder="30"
+                    <label>Rate Caching</label>
+
+                    <field id="cache_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Rate Caching</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Cache API responses to improve performance</comment>
+                        <config_path>carriers/fedexv3/cache_enabled</config_path>
+                    </field>
+                    <field id="cache_ttl" translate="label comment" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Cache TTL (seconds)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>How long to cache rates (default: 3600 = 1 hour)</comment>
+                        <config_path>carriers/fedexv3/cache_ttl</config_path>
+                        <depends>
+                            <field id="cache_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cache_fallback" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Use Cache on API Failure</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Return cached rates if FedEx API is unavailable</comment>
+                        <config_path>carriers/fedexv3/cache_fallback</config_path>
+                        <depends>
+                            <field id="cache_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Shipping Restrictions -->
+                <group id="restrictions" translate="label" type="text" sortOrder="50"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Account Number</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>Your FedEx Account Number (optional for sandbox)</comment>
-                    <config_path>carriers/fedexv3/account_number</config_path>
-                </field>
-            </group>
+                    <label>Shipping Restrictions</label>
 
-            <!-- Shipping Options -->
-            <group id="shipping" translate="label" type="text" sortOrder="30"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Shipping Options</label>
+                    <field id="sallowspecific" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Ship to Applicable Countries</label>
+                        <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>carriers/fedexv3/sallowspecific</config_path>
+                    </field>
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Ship to Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <can_be_empty>1</can_be_empty>
+                        <config_path>carriers/fedexv3/specificcountry</config_path>
+                        <depends>
+                            <field id="sallowspecific">1</field>
+                        </depends>
+                    </field>
+                    <field id="showmethod" translate="label" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Show Method if Not Applicable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>carriers/fedexv3/showmethod</config_path>
+                    </field>
+                    <field id="sort_order" translate="label" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Sort Order</label>
+                        <validate>validate-number</validate>
+                        <config_path>carriers/fedexv3/sort_order</config_path>
+                    </field>
+                </group>
 
-                <field id="allowed_methods" translate="label" type="multiselect" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Allowed Methods</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\ServiceType</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>carriers/fedexv3/allowed_methods</config_path>
-                </field>
-                <field id="package_type" translate="label" type="select" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Default Package Type</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\PackagingType</source_model>
-                    <config_path>carriers/fedexv3/package_type</config_path>
-                </field>
-                <field id="max_weight" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Maximum Package Weight (lbs)</label>
-                    <validate>validate-number validate-greater-than-zero</validate>
-                    <comment>FedEx limit is 150 lbs for most services</comment>
-                    <config_path>carriers/fedexv3/max_weight</config_path>
-                </field>
-                <field id="handling_fee" translate="label comment" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Handling Fee</label>
-                    <validate>validate-number</validate>
-                    <comment>Added to each shipping rate</comment>
-                    <config_path>carriers/fedexv3/handling_fee</config_path>
-                </field>
-                <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="50"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Free Shipping Threshold</label>
-                    <validate>validate-number</validate>
-                    <comment>Cart subtotal for free shipping (0 = disabled)</comment>
-                    <config_path>carriers/fedexv3/free_shipping_threshold</config_path>
-                </field>
-                <field id="cutoff_time" translate="label comment" type="text" sortOrder="60"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Cutoff Time</label>
-                    <comment>Orders placed after this time ship next business day (HH:MM format)</comment>
-                    <config_path>carriers/fedexv3/cutoff_time</config_path>
-                </field>
-                <field id="method_cutoffs" translate="label comment" type="textarea" sortOrder="62"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Per-Method Cutoff Times</label>
-                    <comment><![CDATA[JSON format: {"METHOD_CODE": "HH:MM", ...}<br/>Example: {"FEDEX_GROUND": "14:00", "FEDEX_EXPRESS_SAVER": "18:00"}<br/>Methods not listed use the global Cutoff Time above.]]></comment>
-                    <config_path>carriers/fedexv3/method_cutoffs</config_path>
-                </field>
-                <field id="pickup_days" translate="label comment" type="multiselect" sortOrder="65"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Pickup Days</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\Weekdays</source_model>
-                    <comment>Days when FedEx picks up from your location</comment>
-                    <config_path>carriers/fedexv3/pickup_days</config_path>
-                </field>
-                <field id="pickup_time" translate="label comment" type="text" sortOrder="67"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Pickup Time</label>
-                    <comment>Time when carrier picks up (HH:MM format). Orders after this time ship next pickup day.</comment>
-                    <config_path>carriers/fedexv3/pickup_time</config_path>
-                </field>
-                <field id="grace_period" translate="label comment" type="text" sortOrder="70"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Grace Period</label>
-                    <validate>validate-number validate-zero-or-greater</validate>
-                    <comment>Processing time before order ships (added to transit time)</comment>
-                    <config_path>carriers/fedexv3/grace_period</config_path>
-                </field>
-                <field id="grace_period_unit" translate="label" type="select" sortOrder="75"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Grace Period Unit</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\GracePeriodUnit</source_model>
-                    <config_path>carriers/fedexv3/grace_period_unit</config_path>
-                </field>
-            </group>
-
-            <!-- Rate Caching -->
-            <group id="caching" translate="label" type="text" sortOrder="40"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Rate Caching</label>
-
-                <field id="cache_enabled" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Enable Rate Caching</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Cache API responses to improve performance</comment>
-                    <config_path>carriers/fedexv3/cache_enabled</config_path>
-                </field>
-                <field id="cache_ttl" translate="label comment" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Cache TTL (seconds)</label>
-                    <validate>validate-number validate-greater-than-zero</validate>
-                    <comment>How long to cache rates (default: 3600 = 1 hour)</comment>
-                    <config_path>carriers/fedexv3/cache_ttl</config_path>
-                    <depends>
-                        <field id="cache_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cache_fallback" translate="label comment" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Use Cache on API Failure</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Return cached rates if FedEx API is unavailable</comment>
-                    <config_path>carriers/fedexv3/cache_fallback</config_path>
-                    <depends>
-                        <field id="cache_enabled">1</field>
-                    </depends>
-                </field>
-            </group>
-
-            <!-- Shipping Restrictions -->
-            <group id="restrictions" translate="label" type="text" sortOrder="50"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Shipping Restrictions</label>
-
-                <field id="sallowspecific" translate="label" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Ship to Applicable Countries</label>
-                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
-                    <config_path>carriers/fedexv3/sallowspecific</config_path>
-                </field>
-                <field id="specificcountry" translate="label" type="multiselect" sortOrder="20"
+                <!-- Developer Settings -->
+                <group id="developer" translate="label" type="text" sortOrder="60"
                        showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Ship to Specific Countries</label>
-                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>carriers/fedexv3/specificcountry</config_path>
-                    <depends>
-                        <field id="sallowspecific">1</field>
-                    </depends>
-                </field>
-                <field id="showmethod" translate="label" type="select" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Show Method if Not Applicable</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>carriers/fedexv3/showmethod</config_path>
-                </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Sort Order</label>
-                    <validate>validate-number</validate>
-                    <config_path>carriers/fedexv3/sort_order</config_path>
-                </field>
+                    <label>Developer Settings</label>
+
+                    <field id="debug" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                        <label>Debug Mode</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Log API requests and responses to var/log/fedexv3.log</comment>
+                        <config_path>carriers/fedexv3/debug</config_path>
+                    </field>
+                </group>
             </group>
 
-            <!-- Developer Settings -->
-            <group id="developer" translate="label" type="text" sortOrder="60"
-                   showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Developer Settings</label>
-
-                <field id="debug" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
-                    <label>Debug Mode</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Log API requests and responses to var/log/fedexv3.log</comment>
-                    <config_path>carriers/fedexv3/debug</config_path>
-                </field>
-            </group>
-        </section>
-
-        <!-- ═══════════════════════════════════════════════════════════════════════
-             Smart Shipping Display Settings
-             ═══════════════════════════════════════════════════════════════════════ -->
-        <section id="smartshipping" translate="label" sortOrder="40"
-                 showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Display Settings</label>
-            <tab>jscriptz_smartshipping</tab>
-            <resource>Magento_Config::config_shipping</resource>
-
-            <!-- General Display Settings -->
-            <group id="general" translate="label" type="text" sortOrder="10"
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 DISPLAY SETTINGS
+                 ═══════════════════════════════════════════════════════════════════ -->
+            <group id="display" translate="label" type="text" sortOrder="40"
                    showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Shipping Method Display</label>
+                <label>Display Settings</label>
 
-                <field id="timezone" translate="label comment" type="select" sortOrder="5"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Store Timezone</label>
-                    <source_model>Magento\Config\Model\Config\Source\Locale\Timezone</source_model>
-                    <comment>Timezone for cutoff times and pickup schedules. Leave empty to use Magento default.</comment>
-                    <config_path>smartshipping/general/timezone</config_path>
-                </field>
-                <field id="estimates_enabled" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Show Delivery Estimates</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Display estimated delivery dates from carrier APIs</comment>
-                </field>
-                <field id="badges_enabled" translate="label comment" type="select" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Show Fastest/Best Value Badges</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Highlight the fastest and cheapest shipping options</comment>
-                </field>
-                <field id="fastest_label" translate="label" type="text" sortOrder="25"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Fastest Badge Label</label>
-                    <depends>
-                        <field id="badges_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cheapest_label" translate="label" type="text" sortOrder="26"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Best Value Badge Label</label>
-                    <depends>
-                        <field id="badges_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="processing_days" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Processing Days</label>
-                    <validate>validate-number validate-zero-or-greater</validate>
-                    <comment>Business days to prepare order before shipping</comment>
-                </field>
-                <field id="method_limit" translate="label comment" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Methods to Show</label>
-                    <validate>validate-number validate-zero-or-greater</validate>
-                    <comment>Maximum shipping methods to display (0 = unlimited)</comment>
-                </field>
-                <field id="method_show_more_enabled" translate="label" type="select" sortOrder="45"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Show "View More" Link</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="method_sort_by" translate="label" type="select" sortOrder="50"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sort Methods By</label>
-                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\SortBy</source_model>
-                </field>
-                <field id="method_allow_frontend_sort" translate="label" type="select" sortOrder="55"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Allow Customer Sorting</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
+                <!-- General Display Settings -->
+                <group id="general" translate="label" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shipping Method Display</label>
+
+                    <field id="timezone" translate="label comment" type="select" sortOrder="5"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Store Timezone</label>
+                        <source_model>Magento\Config\Model\Config\Source\Locale\Timezone</source_model>
+                        <comment>Timezone for cutoff times and pickup schedules. Leave empty to use Magento default.</comment>
+                        <config_path>smartshipping/general/timezone</config_path>
+                    </field>
+                    <field id="estimates_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Show Delivery Estimates</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Display estimated delivery dates from carrier APIs</comment>
+                    </field>
+                    <field id="badges_enabled" translate="label comment" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Show Fastest/Best Value Badges</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Highlight the fastest and cheapest shipping options</comment>
+                    </field>
+                    <field id="fastest_label" translate="label" type="text" sortOrder="25"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Fastest Badge Label</label>
+                        <depends>
+                            <field id="badges_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cheapest_label" translate="label" type="text" sortOrder="26"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Best Value Badge Label</label>
+                        <depends>
+                            <field id="badges_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="processing_days" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Processing Days</label>
+                        <validate>validate-number validate-zero-or-greater</validate>
+                        <comment>Business days to prepare order before shipping</comment>
+                    </field>
+                    <field id="method_limit" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Methods to Show</label>
+                        <validate>validate-number validate-zero-or-greater</validate>
+                        <comment>Maximum shipping methods to display (0 = unlimited)</comment>
+                    </field>
+                    <field id="method_show_more_enabled" translate="label" type="select" sortOrder="45"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Show "View More" Link</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                    <field id="method_sort_by" translate="label" type="select" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sort Methods By</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\SortBy</source_model>
+                    </field>
+                    <field id="method_allow_frontend_sort" translate="label" type="select" sortOrder="55"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Allow Customer Sorting</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                </group>
+
+                <!-- Free Shipping Progress -->
+                <group id="free_shipping" translate="label" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Free Shipping Progress</label>
+
+                    <field id="free_shipping_enabled" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Show Progress Bar</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>smartshipping/general/free_shipping_enabled</config_path>
+                    </field>
+                    <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Custom Threshold</label>
+                        <validate>validate-number</validate>
+                        <comment>Leave empty to auto-detect from Free Shipping carrier</comment>
+                        <config_path>smartshipping/general/free_shipping_threshold</config_path>
+                        <depends>
+                            <field id="free_shipping_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="free_shipping_message" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Progress Message</label>
+                        <comment>Use {amount} placeholder. Default: "Add {amount} more for FREE shipping!"</comment>
+                        <config_path>smartshipping/general/free_shipping_message</config_path>
+                        <depends>
+                            <field id="free_shipping_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="free_shipping_success_message" translate="label" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Success Message</label>
+                        <config_path>smartshipping/general/free_shipping_success_message</config_path>
+                        <depends>
+                            <field id="free_shipping_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Cutoff Countdown -->
+                <group id="cutoff" translate="label" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cutoff Countdown</label>
+
+                    <field id="cutoff_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Enable Cutoff Countdown</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Show countdown timer for same-day shipping cutoff</comment>
+                        <config_path>smartshipping/general/cutoff_enabled</config_path>
+                    </field>
+                    <field id="cutoff_message" translate="label comment" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Countdown Message</label>
+                        <comment>Use {time} placeholder. Default: "Order in {time} for this delivery option"</comment>
+                        <config_path>smartshipping/general/cutoff_message</config_path>
+                        <depends>
+                            <field id="cutoff_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cutoff_expired_message" translate="label" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Expired Message</label>
+                        <config_path>smartshipping/general/cutoff_expired_message</config_path>
+                        <depends>
+                            <field id="cutoff_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cutoff_colors_enabled" translate="label comment" type="select" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Enable Color Coding</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Red/Amber/Green colors based on time remaining</comment>
+                        <config_path>smartshipping/general/cutoff_colors_enabled</config_path>
+                        <depends>
+                            <field id="cutoff_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cutoff_color_red_hours" translate="label comment" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Red Threshold (hours)</label>
+                        <validate>validate-number</validate>
+                        <comment>Show red when less than this many hours remain</comment>
+                        <config_path>smartshipping/general/cutoff_color_red_hours</config_path>
+                        <depends>
+                            <field id="cutoff_enabled">1</field>
+                            <field id="cutoff_colors_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cutoff_color_amber_hours" translate="label comment" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Amber Threshold (hours)</label>
+                        <validate>validate-number</validate>
+                        <comment>Show amber when less than this many hours remain</comment>
+                        <config_path>smartshipping/general/cutoff_color_amber_hours</config_path>
+                        <depends>
+                            <field id="cutoff_enabled">1</field>
+                            <field id="cutoff_colors_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="cutoff_color_green_hours" translate="label comment" type="text" sortOrder="70"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Green Threshold (hours)</label>
+                        <validate>validate-number</validate>
+                        <comment>Show green when more than this many hours remain</comment>
+                        <config_path>smartshipping/general/cutoff_color_green_hours</config_path>
+                        <depends>
+                            <field id="cutoff_enabled">1</field>
+                            <field id="cutoff_colors_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
             </group>
 
-            <!-- Free Shipping Progress -->
-            <group id="free_shipping" translate="label" type="text" sortOrder="20"
-                   showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Free Shipping Progress</label>
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SHIPMENT AUTOMATION
+                 ═══════════════════════════════════════════════════════════════════ -->
+            <group id="automation" translate="label" type="text" sortOrder="50"
+                   showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Shipment Automation</label>
 
-                <field id="free_shipping_enabled" translate="label" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Show Progress Bar</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>smartshipping/general/free_shipping_enabled</config_path>
-                </field>
-                <field id="free_shipping_threshold" translate="label comment" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Custom Threshold</label>
-                    <validate>validate-number</validate>
-                    <comment>Leave empty to auto-detect from Free Shipping carrier</comment>
-                    <config_path>smartshipping/general/free_shipping_threshold</config_path>
-                    <depends>
-                        <field id="free_shipping_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="free_shipping_message" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Progress Message</label>
-                    <comment>Use {amount} placeholder. Default: "Add {amount} more for FREE shipping!"</comment>
-                    <config_path>smartshipping/general/free_shipping_message</config_path>
-                    <depends>
-                        <field id="free_shipping_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="free_shipping_success_message" translate="label" type="text" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Success Message</label>
-                    <config_path>smartshipping/general/free_shipping_success_message</config_path>
-                    <depends>
-                        <field id="free_shipping_enabled">1</field>
-                    </depends>
-                </field>
+                <!-- Auto-Shipment Settings -->
+                <group id="auto_ship" translate="label comment" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Auto-Shipment</label>
+                    <comment>Automatically create shipments with labels when orders are placed or invoiced</comment>
+
+                    <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Auto-Shipment</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Automatically create shipments for eligible orders</comment>
+                        <config_path>smartshipping/shipment/auto_ship_enabled</config_path>
+                    </field>
+                    <field id="trigger" translate="label comment" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Trigger</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Shipment\Config\Source\Trigger</source_model>
+                        <comment>When to automatically create shipments</comment>
+                        <config_path>smartshipping/shipment/auto_ship_trigger</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="send_tracking_email" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Send Tracking Email</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Email customer when shipment is created</comment>
+                        <config_path>smartshipping/shipment/send_tracking_email</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Enabled Carriers -->
+                <group id="carriers" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enabled Carriers for Auto-Ship</label>
+                    <comment>Select which carriers should be used for automatic shipment creation</comment>
+
+                    <field id="usps_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>USPS</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Enable auto-shipment for USPS orders (requires label generation setup)</comment>
+                        <config_path>smartshipping/shipment/usps_enabled</config_path>
+                    </field>
+                    <field id="ups_enabled" translate="label comment" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>UPS</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Enable auto-shipment for UPS orders (coming soon)</comment>
+                        <config_path>smartshipping/shipment/ups_enabled</config_path>
+                    </field>
+                    <field id="fedex_enabled" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>FedEx</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Enable auto-shipment for FedEx orders (coming soon)</comment>
+                        <config_path>smartshipping/shipment/fedex_enabled</config_path>
+                    </field>
+                </group>
+
+                <!-- Developer Settings -->
+                <group id="developer" translate="label" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Developer Settings</label>
+
+                    <field id="debug" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                        <label>Debug Mode</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Log shipment automation activity to var/log/smartshipping.log</comment>
+                        <config_path>smartshipping/shipment/debug</config_path>
+                    </field>
+                </group>
             </group>
 
-            <!-- Cutoff Countdown -->
-            <group id="cutoff" translate="label" type="text" sortOrder="30"
-                   showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Cutoff Countdown</label>
-
-                <field id="cutoff_enabled" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Enable Cutoff Countdown</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Show countdown timer for same-day shipping cutoff</comment>
-                    <config_path>smartshipping/general/cutoff_enabled</config_path>
-                </field>
-                <field id="cutoff_message" translate="label comment" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Countdown Message</label>
-                    <comment>Use {time} placeholder. Default: "Order in {time} for this delivery option"</comment>
-                    <config_path>smartshipping/general/cutoff_message</config_path>
-                    <depends>
-                        <field id="cutoff_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cutoff_expired_message" translate="label" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Expired Message</label>
-                    <config_path>smartshipping/general/cutoff_expired_message</config_path>
-                    <depends>
-                        <field id="cutoff_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cutoff_colors_enabled" translate="label comment" type="select" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Enable Color Coding</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Red/Amber/Green colors based on time remaining</comment>
-                    <config_path>smartshipping/general/cutoff_colors_enabled</config_path>
-                    <depends>
-                        <field id="cutoff_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cutoff_color_red_hours" translate="label comment" type="text" sortOrder="50"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Red Threshold (hours)</label>
-                    <validate>validate-number</validate>
-                    <comment>Show red when less than this many hours remain</comment>
-                    <config_path>smartshipping/general/cutoff_color_red_hours</config_path>
-                    <depends>
-                        <field id="cutoff_enabled">1</field>
-                        <field id="cutoff_colors_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cutoff_color_amber_hours" translate="label comment" type="text" sortOrder="60"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Amber Threshold (hours)</label>
-                    <validate>validate-number</validate>
-                    <comment>Show amber when less than this many hours remain</comment>
-                    <config_path>smartshipping/general/cutoff_color_amber_hours</config_path>
-                    <depends>
-                        <field id="cutoff_enabled">1</field>
-                        <field id="cutoff_colors_enabled">1</field>
-                    </depends>
-                </field>
-                <field id="cutoff_color_green_hours" translate="label comment" type="text" sortOrder="70"
-                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Green Threshold (hours)</label>
-                    <validate>validate-number</validate>
-                    <comment>Show green when more than this many hours remain</comment>
-                    <config_path>smartshipping/general/cutoff_color_green_hours</config_path>
-                    <depends>
-                        <field id="cutoff_enabled">1</field>
-                        <field id="cutoff_colors_enabled">1</field>
-                    </depends>
-                </field>
-            </group>
         </section>
 
     </system>
