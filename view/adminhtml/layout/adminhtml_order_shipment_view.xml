@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Jscriptz SmartShipping - Shipment View Layout
+ *
+ * Adds label download/view buttons and styling to shipment view page.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Jscriptz_SmartShipping::css/shipment-label.css"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Jscriptz\SmartShipping\Block\Adminhtml\Shipment\LabelButtons"
+                   name="smartshipping.label.buttons"
+                   template="Jscriptz_SmartShipping::shipment/label-buttons.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

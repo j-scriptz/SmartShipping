@@ -193,6 +193,20 @@
         </arguments>
     </type>
 
+    <!-- FedEx Label Client -->
+    <type name="Jscriptz\SmartShipping\Model\Fedex\Client\LabelClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- FedEx Label Provider -->
+    <type name="Jscriptz\SmartShipping\Model\Fedex\LabelProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\Logger</argument>
+        </arguments>
+    </type>
+
     <!-- ═══════════════════════════════════════════════════════════════════════
          Shipment Automation Configuration
          ═══════════════════════════════════════════════════════════════════════ -->
@@ -217,7 +231,8 @@
         <arguments>
             <argument name="providers" xsi:type="array">
                 <item name="uspsv3" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\LabelProvider</item>
-                <!-- UPS and FedEx providers will be added later -->
+                <item name="fedexv3" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\LabelProvider</item>
+                <!-- UPS provider will be added later -->
             </argument>
         </arguments>
     </type>
@@ -266,6 +281,16 @@
         <arguments>
             <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Shipment\Logger</argument>
         </arguments>
+    </type>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Admin Plugins
+         ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Add "Create Shipping Label" button to order view page -->
+    <type name="Magento\Backend\Block\Widget\Button\Toolbar">
+        <plugin name="smartshipping_add_label_button"
+                type="Jscriptz\SmartShipping\Plugin\Adminhtml\AddLabelButtonToOrderView"/>
     </type>
 
 </config>

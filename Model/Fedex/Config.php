@@ -20,6 +20,8 @@ class Config
 
     private const OAUTH_TOKEN_PATH = '/oauth/token';
     private const RATE_PATH = '/rate/v1/rates/quotes';
+    private const SHIP_PATH = '/ship/v1/shipments';
+    private const SHIP_CANCEL_PATH = '/ship/v1/shipments/cancel';
     private const ADDRESS_VALIDATION_PATH = '/address/v1/addresses/resolve';
     private const TRACK_PATH = '/track/v1/trackingnumbers';
 
@@ -122,6 +124,22 @@ class Config
     public function getTrackUrl(?int $storeId = null): string
     {
         return $this->getBaseUrl($storeId) . self::TRACK_PATH;
+    }
+
+    /**
+     * Get Ship API URL (for creating shipments/labels)
+     */
+    public function getShipUrl(?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::SHIP_PATH;
+    }
+
+    /**
+     * Get Ship Cancel URL (for voiding labels)
+     */
+    public function getCancelShipUrl(?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::SHIP_CANCEL_PATH;
     }
 
     /**
@@ -374,5 +392,369 @@ class Config
     {
         return !empty($this->getClientId($storeId))
             && !empty($this->getClientSecret($storeId));
+    }
+
+    // =========================================================================
+    // Label Generation Configuration
+    // =========================================================================
+
+    /**
+     * Check if label generation is enabled
+     */
+    public function isLabelEnabled(?int $storeId = null): bool
+    {
+        return $this->getFlag('label_enabled', $storeId);
+    }
+
+    /**
+     * Check if all required label credentials are configured
+     */
+    public function hasLabelCredentials(?int $storeId = null): bool
+    {
+        return $this->hasCredentials($storeId)
+            && !empty($this->getAccountNumber($storeId));
+    }
+
+    /**
+     * Get label format (PDF, PNG, ZPLII, EPL2)
+     */
+    public function getLabelFormat(?int $storeId = null): string
+    {
+        return $this->getValue('label_format', $storeId) ?? 'PDF';
+    }
+
+    /**
+     * Get label stock type
+     */
+    public function getLabelStockType(?int $storeId = null): string
+    {
+        return $this->getValue('label_stock_type', $storeId) ?? 'PAPER_4X6';
+    }
+
+    /**
+     * Get default package weight (lbs)
+     */
+    public function getDefaultWeight(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_weight', $storeId) ?? 1.0);
+    }
+
+    /**
+     * Get default package length (inches)
+     */
+    public function getDefaultLength(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_length', $storeId) ?? 12.0);
+    }
+
+    /**
+     * Get default package width (inches)
+     */
+    public function getDefaultWidth(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_width', $storeId) ?? 9.0);
+    }
+
+    /**
+     * Get default package height (inches)
+     */
+    public function getDefaultHeight(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_height', $storeId) ?? 6.0);
+    }
+
+    /**
+     * Get shipper company name
+     */
+    public function getShipperCompany(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_company', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper contact name
+     */
+    public function getShipperContactName(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_contact_name', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper phone number
+     */
+    public function getShipperPhone(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_phone', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper street address
+     */
+    public function getShipperStreet(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_street', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper city
+     */
+    public function getShipperCity(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_city', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper state/province code
+     */
+    public function getShipperState(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_state', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper postal code
+     */
+    public function getShipperPostalCode(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_postal_code', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper country code
+     */
+    public function getShipperCountry(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_country', $storeId) ?? 'US';
+    }
+
+    /**
+     * Check if shipper address is configured
+     */
+    public function hasShipperAddress(?int $storeId = null): bool
+    {
+        return !empty($this->getShipperStreet($storeId))
+            && !empty($this->getShipperCity($storeId))
+            && !empty($this->getShipperState($storeId))
+            && !empty($this->getShipperPostalCode($storeId));
+    }
+
+    /**
+     * Get drop off type (REGULAR_PICKUP, REQUEST_COURIER, DROP_BOX, etc.)
+     */
+    public function getDropOffType(?int $storeId = null): string
+    {
+        return $this->getValue('drop_off_type', $storeId) ?? 'REGULAR_PICKUP';
+    }
+
+    // =========================================================================
+    // Package Attribute Mapping Configuration
+    // =========================================================================
+
+    /**
+     * Get weight attribute code
+     */
+    public function getWeightAttribute(?int $storeId = null): ?string
+    {
+        $value = $this->getValue('weight_attribute', $storeId);
+        return !empty($value) ? $value : null;
+    }
+
+    /**
+     * Get weight unit (LB, KG, OZ)
+     */
+    public function getWeightUnit(?int $storeId = null): string
+    {
+        return $this->getValue('weight_unit', $storeId) ?? 'LB';
+    }
+
+    /**
+     * Get length attribute code
+     */
+    public function getLengthAttribute(?int $storeId = null): ?string
+    {
+        $value = $this->getValue('length_attribute', $storeId);
+        return !empty($value) ? $value : null;
+    }
+
+    /**
+     * Get width attribute code
+     */
+    public function getWidthAttribute(?int $storeId = null): ?string
+    {
+        $value = $this->getValue('width_attribute', $storeId);
+        return !empty($value) ? $value : null;
+    }
+
+    /**
+     * Get height attribute code
+     */
+    public function getHeightAttribute(?int $storeId = null): ?string
+    {
+        $value = $this->getValue('height_attribute', $storeId);
+        return !empty($value) ? $value : null;
+    }
+
+    /**
+     * Get dimension unit (IN, CM, FT, M)
+     */
+    public function getDimensionUnit(?int $storeId = null): string
+    {
+        return $this->getValue('dimension_unit', $storeId) ?? 'IN';
+    }
+
+    /**
+     * Get dimension rounding method (up, down, nearest)
+     */
+    public function getDimensionRounding(?int $storeId = null): string
+    {
+        return $this->getValue('dimension_rounding', $storeId) ?? 'up';
+    }
+
+    /**
+     * Check if product attribute mapping is configured for dimensions
+     */
+    public function hasDimensionAttributes(?int $storeId = null): bool
+    {
+        return $this->getLengthAttribute($storeId) !== null
+            || $this->getWidthAttribute($storeId) !== null
+            || $this->getHeightAttribute($storeId) !== null;
+    }
+
+    /**
+     * Check if product attribute mapping is configured for weight
+     */
+    public function hasWeightAttribute(?int $storeId = null): bool
+    {
+        return $this->getWeightAttribute($storeId) !== null;
+    }
+
+    // =========================================================================
+    // Oversized Package Detection Configuration
+    // =========================================================================
+
+    /**
+     * Check if oversized detection is enabled
+     */
+    public function isOversizedDetectionEnabled(?int $storeId = null): bool
+    {
+        return $this->getFlag('oversized_enabled', $storeId);
+    }
+
+    /**
+     * Get maximum weight for parcel shipping (lbs)
+     */
+    public function getOversizedMaxWeight(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('oversized_max_weight', $storeId) ?? 150.0);
+    }
+
+    /**
+     * Get maximum length for parcel shipping (inches)
+     */
+    public function getOversizedMaxLength(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('oversized_max_length', $storeId) ?? 108.0);
+    }
+
+    /**
+     * Get maximum length + girth for parcel shipping (inches)
+     * Girth = 2 * width + 2 * height
+     */
+    public function getOversizedMaxGirth(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('oversized_max_girth', $storeId) ?? 165.0);
+    }
+
+    /**
+     * Get oversized message to display
+     */
+    public function getOversizedMessage(?int $storeId = null): string
+    {
+        return $this->getValue('oversized_message', $storeId)
+            ?? 'This item requires freight shipping. Please contact us for a quote.';
+    }
+
+    /**
+     * Check if oversized message should show as a shipping method
+     */
+    public function showOversizedAsMethod(?int $storeId = null): bool
+    {
+        return $this->getFlag('oversized_show_as_method', $storeId);
+    }
+
+    /**
+     * Get oversized method title
+     */
+    public function getOversizedMethodTitle(?int $storeId = null): string
+    {
+        return $this->getValue('oversized_method_title', $storeId) ?? 'Freight Quote Required';
+    }
+
+    /**
+     * Check if package dimensions exceed parcel limits
+     *
+     * @param float $weight Weight in pounds
+     * @param float $length Length in inches
+     * @param float $width Width in inches
+     * @param float $height Height in inches
+     * @return array{is_oversized: bool, reasons: string[]}
+     */
+    public function checkOversized(
+        float $weight,
+        float $length,
+        float $width,
+        float $height,
+        ?int $storeId = null
+    ): array {
+        if (!$this->isOversizedDetectionEnabled($storeId)) {
+            return ['is_oversized' => false, 'reasons' => []];
+        }
+
+        $reasons = [];
+
+        // Check weight
+        if ($weight > $this->getOversizedMaxWeight($storeId)) {
+            $reasons[] = sprintf(
+                'Weight (%.1f lbs) exceeds maximum of %.0f lbs',
+                $weight,
+                $this->getOversizedMaxWeight($storeId)
+            );
+        }
+
+        // Check length
+        if ($length > $this->getOversizedMaxLength($storeId)) {
+            $reasons[] = sprintf(
+                'Length (%.1f in) exceeds maximum of %.0f inches',
+                $length,
+                $this->getOversizedMaxLength($storeId)
+            );
+        }
+
+        // Check length + girth
+        $girth = (2 * $width) + (2 * $height);
+        $lengthPlusGirth = $length + $girth;
+        if ($lengthPlusGirth > $this->getOversizedMaxGirth($storeId)) {
+            $reasons[] = sprintf(
+                'Length + Girth (%.1f in) exceeds maximum of %.0f inches',
+                $lengthPlusGirth,
+                $this->getOversizedMaxGirth($storeId)
+            );
+        }
+
+        return [
+            'is_oversized' => !empty($reasons),
+            'reasons' => $reasons,
+        ];
+    }
+
+    /**
+     * Get formatted oversized message with reason placeholder replaced
+     */
+    public function getFormattedOversizedMessage(array $reasons, ?int $storeId = null): string
+    {
+        $message = $this->getOversizedMessage($storeId);
+        $reasonText = implode('; ', $reasons);
+
+        return str_replace('{reason}', $reasonText, $message);
     }
 }

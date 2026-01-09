@@ -868,8 +868,269 @@
                     </field>
                 </group>
 
+                <!-- Label Generation -->
+                <group id="label" translate="label comment" type="text" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Label Generation</label>
+                    <comment><![CDATA[<strong>Note:</strong> Label generation uses the FedEx Ship API. Ensure your credentials have Ship API access enabled in the FedEx Developer Portal.]]></comment>
+
+                    <field id="label_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Label Generation</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Generate shipping labels via FedEx Ship API</comment>
+                        <config_path>carriers/fedexv3/label_enabled</config_path>
+                    </field>
+                    <field id="label_format" translate="label" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Label Format</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\LabelFormat</source_model>
+                        <config_path>carriers/fedexv3/label_format</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="label_stock_type" translate="label comment" type="select" sortOrder="25"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Label Stock Type</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\LabelStockType</source_model>
+                        <comment>Paper size for printed labels</comment>
+                        <config_path>carriers/fedexv3/label_stock_type</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="drop_off_type" translate="label" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Drop Off Type</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Fedex\Config\Source\DropOffType</source_model>
+                        <config_path>carriers/fedexv3/drop_off_type</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_weight" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Weight (lbs)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>Used when order items have no weight</comment>
+                        <config_path>carriers/fedexv3/default_weight</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_length" translate="label" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Length (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/fedexv3/default_length</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_width" translate="label" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Width (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/fedexv3/default_width</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_height" translate="label" type="text" sortOrder="70"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Height (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/fedexv3/default_height</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Package Dimensions from Product Attributes -->
+                <group id="package_attributes" translate="label comment" type="text" sortOrder="62"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Package Dimensions from Products</label>
+                    <comment>Map product attributes to package dimensions. When set, dimensions will be calculated from order items instead of using defaults.</comment>
+
+                    <field id="weight_attribute" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Weight Attribute</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\ProductAttribute</source_model>
+                        <comment>Product attribute containing item weight</comment>
+                        <config_path>carriers/fedexv3/weight_attribute</config_path>
+                    </field>
+                    <field id="weight_unit" translate="label comment" type="select" sortOrder="15"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Weight Unit</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\WeightUnit</source_model>
+                        <comment>Unit of the weight attribute values (will be converted to LB for FedEx)</comment>
+                        <config_path>carriers/fedexv3/weight_unit</config_path>
+                    </field>
+                    <field id="length_attribute" translate="label comment" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Length Attribute</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\ProductAttribute</source_model>
+                        <comment>Product attribute containing item length</comment>
+                        <config_path>carriers/fedexv3/length_attribute</config_path>
+                    </field>
+                    <field id="width_attribute" translate="label comment" type="select" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Width Attribute</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\ProductAttribute</source_model>
+                        <comment>Product attribute containing item width</comment>
+                        <config_path>carriers/fedexv3/width_attribute</config_path>
+                    </field>
+                    <field id="height_attribute" translate="label comment" type="select" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Height Attribute</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\ProductAttribute</source_model>
+                        <comment>Product attribute containing item height</comment>
+                        <config_path>carriers/fedexv3/height_attribute</config_path>
+                    </field>
+                    <field id="dimension_unit" translate="label comment" type="select" sortOrder="45"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Dimension Unit</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\DimensionUnit</source_model>
+                        <comment>Unit of the dimension attribute values (will be converted to IN for FedEx)</comment>
+                        <config_path>carriers/fedexv3/dimension_unit</config_path>
+                    </field>
+                    <field id="dimension_rounding" translate="label comment" type="select" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Dimension Rounding</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Config\Source\DimensionRounding</source_model>
+                        <comment>How to handle decimal dimensions (FedEx requires whole numbers)</comment>
+                        <config_path>carriers/fedexv3/dimension_rounding</config_path>
+                    </field>
+                </group>
+
+                <!-- Oversized Package Handling -->
+                <group id="oversized" translate="label comment" type="text" sortOrder="63"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Oversized Package Handling</label>
+                    <comment>Detect oversized packages that exceed FedEx parcel limits and require freight shipping</comment>
+
+                    <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Oversized Detection</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Check package dimensions against carrier limits during checkout</comment>
+                        <config_path>carriers/fedexv3/oversized_enabled</config_path>
+                    </field>
+                    <field id="max_weight" translate="label comment" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Maximum Weight (lbs)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>FedEx parcel limit is 150 lbs</comment>
+                        <config_path>carriers/fedexv3/oversized_max_weight</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="max_length" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Maximum Length (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>FedEx parcel limit is 108 inches</comment>
+                        <config_path>carriers/fedexv3/oversized_max_length</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="max_girth" translate="label comment" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Maximum Length + Girth (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>Length + (2×Width + 2×Height). FedEx limit is 165 inches.</comment>
+                        <config_path>carriers/fedexv3/oversized_max_girth</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="message" translate="label comment" type="textarea" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Oversized Message</label>
+                        <comment>Message shown when package exceeds limits. Use {reason} for specific limit exceeded.</comment>
+                        <config_path>carriers/fedexv3/oversized_message</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="show_as_method" translate="label comment" type="select" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Display as Shipping Method</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Show oversized message as a shipping method (vs hiding all rates)</comment>
+                        <config_path>carriers/fedexv3/oversized_show_as_method</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="method_title" translate="label comment" type="text" sortOrder="70"
+                           showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Method Title</label>
+                        <comment>Title for the oversized shipping "method"</comment>
+                        <config_path>carriers/fedexv3/oversized_method_title</config_path>
+                        <depends>
+                            <field id="enabled">1</field>
+                            <field id="show_as_method">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Shipper Address -->
+                <group id="shipper" translate="label comment" type="text" sortOrder="65"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Shipper Address (Origin)</label>
+                    <comment>Address printed on labels. Leave empty to use Magento Shipping Origin settings.</comment>
+
+                    <field id="shipper_company" translate="label" type="text" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Company Name</label>
+                        <config_path>carriers/fedexv3/shipper_company</config_path>
+                    </field>
+                    <field id="shipper_contact_name" translate="label" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Contact Name</label>
+                        <config_path>carriers/fedexv3/shipper_contact_name</config_path>
+                    </field>
+                    <field id="shipper_phone" translate="label" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Phone Number</label>
+                        <config_path>carriers/fedexv3/shipper_phone</config_path>
+                    </field>
+                    <field id="shipper_street" translate="label" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Street Address</label>
+                        <config_path>carriers/fedexv3/shipper_street</config_path>
+                    </field>
+                    <field id="shipper_city" translate="label" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>City</label>
+                        <config_path>carriers/fedexv3/shipper_city</config_path>
+                    </field>
+                    <field id="shipper_state" translate="label comment" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>State/Province Code</label>
+                        <comment>Two-letter code (e.g., CA, NY, TX)</comment>
+                        <config_path>carriers/fedexv3/shipper_state</config_path>
+                    </field>
+                    <field id="shipper_postal_code" translate="label" type="text" sortOrder="70"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Postal Code</label>
+                        <config_path>carriers/fedexv3/shipper_postal_code</config_path>
+                    </field>
+                    <field id="shipper_country" translate="label comment" type="text" sortOrder="80"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Country Code</label>
+                        <comment>Two-letter code (e.g., US, CA)</comment>
+                        <config_path>carriers/fedexv3/shipper_country</config_path>
+                    </field>
+                </group>
+
                 <!-- Developer Settings -->
-                <group id="developer" translate="label" type="text" sortOrder="60"
+                <group id="developer" translate="label" type="text" sortOrder="70"
                        showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Developer Settings</label>
 
@@ -1138,7 +1399,7 @@
                            showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>FedEx</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <comment>Enable auto-shipment for FedEx orders (coming soon)</comment>
+                        <comment>Enable auto-shipment for FedEx orders (requires FedEx label generation setup)</comment>
                         <config_path>smartshipping/shipment/fedex_enabled</config_path>
                     </field>
                 </group>

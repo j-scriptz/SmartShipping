@@ -1,0 +1,147 @@
+/**
+ * Jscriptz SmartShipping - Shipment Label Styling
+ *
+ * Styles the shipping label buttons in the admin shipment view.
+ */
+
+/* Shipping and Tracking Information section */
+.order-shipping-address .shipping-description-wrapper {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e3e3e3;
+}
+
+.order-shipping-address .shipping-description-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+/* Label buttons container - the <p> that holds the buttons */
+.order-shipping-address .admin__page-section-item-content > p:has(.action-default) {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f8f8;
+    border-radius: 4px;
+    border: 1px solid #e3e3e3;
+}
+
+/* Style all label-related buttons in shipping section */
+.order-shipping-address .action-default,
+.order-shipping-address button.action-default {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-height: 36px;
+}
+
+/* Print Shipping Label button - Orange primary style */
+.order-shipment-billing-shipping .order-shipping-address .admin__page-section-item-content > p > button.action-default.scalable,
+.order-shipping-address button.action-default[title="Print Shipping Label"] {
+    background: #eb5202 !important;
+    background-color: #eb5202 !important;
+    border: 1px solid #eb5202 !important;
+    color: #fff !important;
+}
+
+.order-shipment-billing-shipping .order-shipping-address .admin__page-section-item-content > p > button.action-default.scalable:hover,
+.order-shipping-address button.action-default[title="Print Shipping Label"]:hover {
+    background: #d44a00 !important;
+    background-color: #d44a00 !important;
+    border-color: #d44a00 !important;
+}
+
+/* Create Shipping Label button - Secondary style */
+.order-shipping-address .action-create-label {
+    background: #514943;
+    border: 1px solid #514943;
+    color: #fff;
+}
+
+.order-shipping-address .action-create-label:hover {
+    background: #3d3733;
+    border-color: #3d3733;
+}
+
+/* Show Packages button - Tertiary style */
+.order-shipping-address button.action-default:not(.action-create-label):not(:first-of-type) {
+    background: #fff;
+    border: 1px solid #514943;
+    color: #514943;
+}
+
+.order-shipping-address button.action-default:not(.action-create-label):not(:first-of-type):hover {
+    background: #f5f5f5;
+}
+
+/* Tracking table styling */
+.order-shipping-address .data-table {
+    margin-top: 15px;
+}
+
+/* SmartShipping custom label section styling */
+.smartshipping-label-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e3e3e3;
+}
+
+.smartshipping-label-section .admin__page-section-title {
+    margin-bottom: 15px;
+}
+
+.smartshipping-label-section .admin__page-section-title .title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.smartshipping-label-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.smartshipping-label-buttons .action-default {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.smartshipping-label-buttons .action-default.primary {
+    background: #eb5202;
+    border: 1px solid #eb5202;
+    color: #fff;
+}
+
+.smartshipping-label-buttons .action-default.primary:hover {
+    background: #d44a00;
+    border-color: #d44a00;
+}
+
+.smartshipping-label-buttons .action-default.secondary {
+    background: #514943;
+    border: 1px solid #514943;
+    color: #fff;
+}
+
+.smartshipping-label-buttons .action-default.secondary:hover {
+    background: #3d3733;
+    border-color: #3d3733;
+}

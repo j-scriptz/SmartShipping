@@ -1,0 +1,46 @@
+/**
+ * Jscriptz SmartShipping - Tracking Popup Styles
+ *
+ * Makes tracking links more visible and user-friendly
+ * Works with both Luma and Hyvä themes
+ */
+
+/* Tracking popup container */
+.tracking.container a,
+.page.tracking a,
+#tracking-table-popup a,
+[id^="tracking-table-popup-"] a {
+    color: #1979c3;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.tracking.container a:hover,
+.page.tracking a:hover,
+#tracking-table-popup a:hover,
+[id^="tracking-table-popup-"] a:hover {
+    color: #006bb4;
+    text-decoration: underline;
+}
+
+/* Hyvä theme specific - inline-block layout */
+.page.tracking .inline-block a {
+    color: #1979c3;
+    text-decoration: underline;
+}
+
+.page.tracking .inline-block a:hover {
+    color: #006bb4;
+}
+
+/* Luma theme tracking popup table */
+.tracking-info-table a,
+.order-tracking a {
+    color: #1979c3;
+    text-decoration: underline;
+}
+
+.tracking-info-table a:hover,
+.order-tracking a:hover {
+    color: #006bb4;
+}

@@ -14,6 +14,7 @@ use Jscriptz\SmartShipping\Api\ShipmentServiceInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\ShipmentTrackCreationInterfaceFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Api\ShipmentRepositoryInterface;
 use Magento\Sales\Api\ShipOrderInterface;
 use Psr\Log\LoggerInterface;
 
@@ -22,6 +23,7 @@ class ShipmentService implements ShipmentServiceInterface
     public function __construct(
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly ShipOrderInterface $shipOrder,
+        private readonly ShipmentRepositoryInterface $shipmentRepository,
         private readonly ShipmentTrackCreationInterfaceFactory $trackCreationFactory,
         private readonly LabelProviderPool $labelProviderPool,
         private readonly Config $config,
@@ -85,6 +87,9 @@ class ShipmentService implements ShipmentServiceInterface
                 [$track] // tracks
             );
 
+            // Save the label to the shipment
+            $this->saveLabelToShipment((int) $shipmentId, $label);
+
             if ($this->config->isDebugEnabled($storeId)) {
                 $this->logger->debug('[SmartShipping] Shipment created with label', [
                     'order_id' => $orderId,
@@ -95,7 +100,7 @@ class ShipmentService implements ShipmentServiceInterface
             }
 
             return ShipmentResult::success(
-                $shipmentId,
+                (int) $shipmentId,
                 $label->getTrackingNumber(),
                 $label
             );
@@ -260,5 +265,28 @@ class ShipmentService implements ShipmentServiceInterface
         ];
 
         return $titles[$carrierCode] ?? $carrierCode;
+    }
+
+    /**
+     * Save label image to shipment
+     */
+    private function saveLabelToShipment(int $shipmentId, \Jscriptz\SmartShipping\Api\Data\ShipmentLabelInterface $label): void
+    {
+        try {
+            $shipment = $this->shipmentRepository->get($shipmentId);
+
+            // Decode base64 label image to binary
+            $labelImage = base64_decode($label->getLabelImage());
+
+            // Save to shipment's shipping_label field
+            $shipment->setShippingLabel($labelImage);
+            $this->shipmentRepository->save($shipment);
+
+        } catch (\Exception $e) {
+            // Log but don't fail the shipment creation
+            $this->logger->warning('[SmartShipping] Failed to save label to shipment: ' . $e->getMessage(), [
+                'shipment_id' => $shipmentId,
+            ]);
+        }
     }
 }

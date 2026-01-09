@@ -10,11 +10,15 @@ declare(strict_types=1);
 namespace Jscriptz\SmartShipping\Model\Fedex;
 
 use Jscriptz\SmartShipping\Api\TransitTimeRepositoryInterface;
+use Jscriptz\SmartShipping\Model\Config\Source\DimensionRounding;
+use Jscriptz\SmartShipping\Model\Config\Source\DimensionUnit;
+use Jscriptz\SmartShipping\Model\Config\Source\WeightUnit;
 use Jscriptz\SmartShipping\Model\Fedex\Cache\RateCache;
 use Jscriptz\SmartShipping\Model\Fedex\Client\RatingClient;
 use Jscriptz\SmartShipping\Model\Fedex\Config\Source\ServiceType;
 use Jscriptz\SmartShipping\Model\Fedex\Request\RateRequestBuilder;
 use Jscriptz\SmartShipping\Model\Fedex\Response\RateResponseParser;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
@@ -23,6 +27,9 @@ use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
+use Magento\Shipping\Model\Tracking\Result as TrackingResult;
+use Magento\Shipping\Model\Tracking\Result\StatusFactory as TrackingStatusFactory;
+use Magento\Shipping\Model\Tracking\ResultFactory as TrackingResultFactory;
 use Psr\Log\LoggerInterface;
 
 class Carrier extends AbstractCarrier implements CarrierInterface
@@ -43,6 +50,9 @@ class Carrier extends AbstractCarrier implements CarrierInterface
         private readonly MethodFactory $rateMethodFactory,
         private readonly ServiceType $serviceType,
         private readonly TransitTimeRepositoryInterface $transitTimeRepository,
+        private readonly ProductRepositoryInterface $productRepository,
+        private readonly TrackingResultFactory $trackingResultFactory,
+        private readonly TrackingStatusFactory $trackingStatusFactory,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
@@ -72,6 +82,15 @@ class Carrier extends AbstractCarrier implements CarrierInterface
             return $this->getErrorResult(__('Package weight exceeds FedEx limit'));
         }
 
+        // Check for oversized packages (requires freight shipping)
+        $storeId = $request->getStoreId() ? (int) $request->getStoreId() : null;
+        if ($this->config->isOversizedDetectionEnabled($storeId)) {
+            $oversizedResult = $this->checkOversizedPackage($request, $storeId);
+            if ($oversizedResult !== null) {
+                return $oversizedResult;
+            }
+        }
+
         // Check country restrictions
         if (!$this->isCountryAllowed($request->getDestCountryId())) {
             if ($this->config->isDebugEnabled()) {
@@ -79,8 +98,6 @@ class Carrier extends AbstractCarrier implements CarrierInterface
             }
             return false;
         }
-
-        $storeId = $request->getStoreId() ? (int) $request->getStoreId() : null;
 
         // Check cache first
         $cacheKey = $this->rateCache->buildCacheKey($request);
@@ -304,5 +321,246 @@ class Carrier extends AbstractCarrier implements CarrierInterface
     public function isTrackingAvailable(): bool
     {
         return true;
+    }
+
+    /**
+     * Get tracking information
+     *
+     * Returns tracking status with FedEx tracking URL
+     *
+     * @param string $trackingNumber
+     * @return \Magento\Shipping\Model\Tracking\Result\Status
+     */
+    public function getTrackingInfo($trackingNumber)
+    {
+        $tracking = $this->trackingStatusFactory->create();
+
+        $tracking->setCarrier($this->_code);
+        $tracking->setCarrierTitle($this->config->getTitle());
+        $tracking->setTracking($trackingNumber);
+
+        // Build FedEx tracking URL
+        $trackingUrl = 'https://www.fedex.com/fedextrack/?action=track&tracknumbers=' . urlencode($trackingNumber);
+        $tracking->setUrl($trackingUrl);
+
+        return $tracking;
+    }
+
+    /**
+     * Check if package dimensions exceed parcel limits
+     *
+     * Returns a Result with oversized message if oversized, null if within limits
+     */
+    private function checkOversizedPackage(RateRequest $request, ?int $storeId): ?Result
+    {
+        // Calculate package dimensions from products
+        $dimensions = $this->calculatePackageDimensions($request, $storeId);
+        $weight = $this->calculatePackageWeight($request, $storeId);
+
+        // Check against limits
+        $oversizedCheck = $this->config->checkOversized(
+            $weight,
+            $dimensions['length'],
+            $dimensions['width'],
+            $dimensions['height'],
+            $storeId
+        );
+
+        if (!$oversizedCheck['is_oversized']) {
+            return null;
+        }
+
+        if ($this->config->isDebugEnabled($storeId)) {
+            $this->_logger->debug('[FEDEXv3] Oversized package detected', [
+                'weight' => $weight,
+                'dimensions' => $dimensions,
+                'reasons' => $oversizedCheck['reasons'],
+            ]);
+        }
+
+        // Return oversized result
+        return $this->getOversizedResult($oversizedCheck['reasons'], $storeId);
+    }
+
+    /**
+     * Calculate package weight from quote items using product attributes
+     */
+    private function calculatePackageWeight(RateRequest $request, ?int $storeId): float
+    {
+        $totalWeight = 0.0;
+        $weightAttribute = $this->config->getWeightAttribute($storeId);
+        $weightUnit = $this->config->getWeightUnit($storeId);
+
+        $items = $request->getAllItems();
+        if (empty($items)) {
+            // Fall back to request weight if no items
+            return max(0.5, (float) $request->getPackageWeight());
+        }
+
+        foreach ($items as $item) {
+            // Skip parent items of configurable/bundle products
+            if ($item->getParentItem()) {
+                continue;
+            }
+
+            $qty = (float) $item->getQty();
+            $weight = 0.0;
+
+            // Try to get weight from configured attribute
+            if ($weightAttribute) {
+                try {
+                    $product = $this->productRepository->getById((int) $item->getProduct()->getId());
+                    $attrValue = $product->getData($weightAttribute);
+                    if ($attrValue !== null && $attrValue !== '') {
+                        $weight = (float) $attrValue;
+                    }
+                } catch (\Exception $e) {
+                    // Fall through to item weight
+                }
+            }
+
+            // Fall back to item/product weight
+            if ($weight <= 0) {
+                $weight = (float) ($item->getWeight() ?: $item->getProduct()->getWeight() ?: 0);
+            }
+
+            $totalWeight += $weight * $qty;
+        }
+
+        // Convert from configured unit to pounds
+        if ($totalWeight > 0 && $weightUnit !== WeightUnit::LB) {
+            $totalWeight = WeightUnit::toPounds($totalWeight, $weightUnit);
+        }
+
+        // Use default weight if nothing calculated
+        if ($totalWeight <= 0) {
+            $totalWeight = $this->config->getDefaultWeight($storeId);
+        }
+
+        return max(0.5, $totalWeight);
+    }
+
+    /**
+     * Calculate package dimensions from quote items using product attributes
+     *
+     * Uses the maximum dimension from all products in the cart
+     *
+     * @return array{length: float, width: float, height: float}
+     */
+    private function calculatePackageDimensions(RateRequest $request, ?int $storeId): array
+    {
+        $lengthAttribute = $this->config->getLengthAttribute($storeId);
+        $widthAttribute = $this->config->getWidthAttribute($storeId);
+        $heightAttribute = $this->config->getHeightAttribute($storeId);
+        $dimensionUnit = $this->config->getDimensionUnit($storeId);
+        $roundingMethod = $this->config->getDimensionRounding($storeId);
+
+        // Default dimensions from config
+        $defaultLength = $this->config->getDefaultLength($storeId);
+        $defaultWidth = $this->config->getDefaultWidth($storeId);
+        $defaultHeight = $this->config->getDefaultHeight($storeId);
+
+        // If no attributes configured, return defaults
+        if (!$lengthAttribute && !$widthAttribute && !$heightAttribute) {
+            return [
+                'length' => $defaultLength,
+                'width' => $defaultWidth,
+                'height' => $defaultHeight,
+            ];
+        }
+
+        $maxLength = 0.0;
+        $maxWidth = 0.0;
+        $maxHeight = 0.0;
+
+        $items = $request->getAllItems();
+        if (empty($items)) {
+            return [
+                'length' => $defaultLength,
+                'width' => $defaultWidth,
+                'height' => $defaultHeight,
+            ];
+        }
+
+        foreach ($items as $item) {
+            // Skip parent items
+            if ($item->getParentItem()) {
+                continue;
+            }
+
+            try {
+                $product = $this->productRepository->getById((int) $item->getProduct()->getId());
+
+                if ($lengthAttribute) {
+                    $length = (float) ($product->getData($lengthAttribute) ?? 0);
+                    $maxLength = max($maxLength, $length);
+                }
+
+                if ($widthAttribute) {
+                    $width = (float) ($product->getData($widthAttribute) ?? 0);
+                    $maxWidth = max($maxWidth, $width);
+                }
+
+                if ($heightAttribute) {
+                    $height = (float) ($product->getData($heightAttribute) ?? 0);
+                    $maxHeight = max($maxHeight, $height);
+                }
+            } catch (\Exception $e) {
+                // Skip products that can't be loaded
+            }
+        }
+
+        // Convert from configured unit to inches
+        if ($dimensionUnit !== DimensionUnit::IN) {
+            $maxLength = DimensionUnit::toInches($maxLength, $dimensionUnit);
+            $maxWidth = DimensionUnit::toInches($maxWidth, $dimensionUnit);
+            $maxHeight = DimensionUnit::toInches($maxHeight, $dimensionUnit);
+        }
+
+        // Apply rounding and use defaults for any dimension not found
+        return [
+            'length' => $maxLength > 0
+                ? (float) DimensionRounding::apply($maxLength, $roundingMethod)
+                : $defaultLength,
+            'width' => $maxWidth > 0
+                ? (float) DimensionRounding::apply($maxWidth, $roundingMethod)
+                : $defaultWidth,
+            'height' => $maxHeight > 0
+                ? (float) DimensionRounding::apply($maxHeight, $roundingMethod)
+                : $defaultHeight,
+        ];
+    }
+
+    /**
+     * Get result for oversized package
+     *
+     * Either returns an error or a special "method" with the contact message
+     */
+    private function getOversizedResult(array $reasons, ?int $storeId): Result
+    {
+        $result = $this->rateResultFactory->create();
+
+        if ($this->config->showOversizedAsMethod($storeId)) {
+            // Show as a shipping "method" with the message
+            $method = $this->rateMethodFactory->create();
+            $method->setCarrier($this->_code);
+            $method->setCarrierTitle($this->config->getTitle($storeId));
+            $method->setMethod('oversized');
+            $method->setMethodTitle($this->config->getOversizedMethodTitle($storeId));
+            $method->setPrice(0);
+            $method->setCost(0);
+            // Store the message in method description for frontend display
+            $method->setData('method_description', $this->config->getFormattedOversizedMessage($reasons, $storeId));
+            $result->append($method);
+        } else {
+            // Show as an error
+            $error = $this->_rateErrorFactory->create();
+            $error->setCarrier($this->_code);
+            $error->setCarrierTitle($this->config->getTitle($storeId));
+            $error->setErrorMessage($this->config->getFormattedOversizedMessage($reasons, $storeId));
+            $result->append($error);
+        }
+
+        return $result;
     }
 }

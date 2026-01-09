@@ -22,6 +22,9 @@ use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
+use Magento\Shipping\Model\Tracking\Result as TrackingResult;
+use Magento\Shipping\Model\Tracking\Result\StatusFactory as TrackingStatusFactory;
+use Magento\Shipping\Model\Tracking\ResultFactory as TrackingResultFactory;
 use Psr\Log\LoggerInterface;
 
 class Carrier extends AbstractCarrier implements CarrierInterface
@@ -44,6 +47,8 @@ class Carrier extends AbstractCarrier implements CarrierInterface
         private readonly TransitClient $transitClient,
         private readonly TransitRequestBuilder $transitRequestBuilder,
         private readonly TransitTimeRepositoryInterface $transitTimeRepository,
+        private readonly TrackingResultFactory $trackingResultFactory,
+        private readonly TrackingStatusFactory $trackingStatusFactory,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
@@ -268,5 +273,28 @@ class Carrier extends AbstractCarrier implements CarrierInterface
     public function isTrackingAvailable(): bool
     {
         return true;
+    }
+
+    /**
+     * Get tracking information
+     *
+     * Returns tracking status with UPS tracking URL
+     *
+     * @param string $trackingNumber
+     * @return \Magento\Shipping\Model\Tracking\Result\Status
+     */
+    public function getTrackingInfo($trackingNumber)
+    {
+        $tracking = $this->trackingStatusFactory->create();
+
+        $tracking->setCarrier($this->_code);
+        $tracking->setCarrierTitle($this->config->getTitle());
+        $tracking->setTracking($trackingNumber);
+
+        // Build UPS tracking URL
+        $trackingUrl = 'https://www.ups.com/track?loc=en_US&tracknum=' . urlencode($trackingNumber);
+        $tracking->setUrl($trackingUrl);
+
+        return $tracking;
     }
 }
