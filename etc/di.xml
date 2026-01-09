@@ -140,6 +140,20 @@
         </arguments>
     </type>
 
+    <!-- UPS Label Client -->
+    <type name="Jscriptz\SmartShipping\Model\Ups\Client\LabelClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- UPS Label Provider -->
+    <type name="Jscriptz\SmartShipping\Model\Ups\LabelProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\Logger</argument>
+        </arguments>
+    </type>
+
     <!-- ═══════════════════════════════════════════════════════════════════════
          FedEx Carrier Configuration
          ═══════════════════════════════════════════════════════════════════════ -->
@@ -231,8 +245,8 @@
         <arguments>
             <argument name="providers" xsi:type="array">
                 <item name="uspsv3" xsi:type="object">Jscriptz\SmartShipping\Model\Usps\LabelProvider</item>
+                <item name="upsv3" xsi:type="object">Jscriptz\SmartShipping\Model\Ups\LabelProvider</item>
                 <item name="fedexv3" xsi:type="object">Jscriptz\SmartShipping\Model\Fedex\LabelProvider</item>
-                <!-- UPS provider will be added later -->
             </argument>
         </arguments>
     </type>

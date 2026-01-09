@@ -591,6 +591,117 @@
                     </field>
                 </group>
 
+                <!-- Label Generation -->
+                <group id="label" translate="label comment" type="text" sortOrder="55"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Label Generation</label>
+                    <comment><![CDATA[<strong>Note:</strong> Label generation uses the UPS Ship API. Ensure your credentials have Ship API access enabled in the UPS Developer Portal.]]></comment>
+
+                    <field id="label_enabled" translate="label comment" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Enable Label Generation</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Generate shipping labels via UPS Ship API</comment>
+                        <config_path>carriers/upsv3/label_enabled</config_path>
+                    </field>
+                    <field id="label_format" translate="label" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Label Format</label>
+                        <source_model>Jscriptz\SmartShipping\Model\Ups\Config\Source\LabelFormat</source_model>
+                        <config_path>carriers/upsv3/label_format</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_weight" translate="label comment" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Weight (lbs)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <comment>Used when order items have no weight</comment>
+                        <config_path>carriers/upsv3/default_weight</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_length" translate="label" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Length (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/upsv3/default_length</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_width" translate="label" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Width (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/upsv3/default_width</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                    <field id="default_height" translate="label" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Default Package Height (in)</label>
+                        <validate>validate-number validate-greater-than-zero</validate>
+                        <config_path>carriers/upsv3/default_height</config_path>
+                        <depends>
+                            <field id="label_enabled">1</field>
+                        </depends>
+                    </field>
+                </group>
+
+                <!-- Shipper Address -->
+                <group id="shipper" translate="label comment" type="text" sortOrder="57"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Shipper Address (Origin)</label>
+                    <comment>Address printed on labels. Leave empty to use Magento Shipping Origin settings.</comment>
+
+                    <field id="shipper_company" translate="label" type="text" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Company Name</label>
+                        <config_path>carriers/upsv3/shipper_company</config_path>
+                    </field>
+                    <field id="shipper_contact_name" translate="label" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Contact Name</label>
+                        <config_path>carriers/upsv3/shipper_contact_name</config_path>
+                    </field>
+                    <field id="shipper_phone" translate="label" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Phone Number</label>
+                        <config_path>carriers/upsv3/shipper_phone</config_path>
+                    </field>
+                    <field id="shipper_street" translate="label" type="text" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Street Address</label>
+                        <config_path>carriers/upsv3/shipper_street</config_path>
+                    </field>
+                    <field id="shipper_city" translate="label" type="text" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>City</label>
+                        <config_path>carriers/upsv3/shipper_city</config_path>
+                    </field>
+                    <field id="shipper_state" translate="label comment" type="text" sortOrder="60"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>State/Province Code</label>
+                        <comment>Two-letter code (e.g., CA, NY, TX)</comment>
+                        <config_path>carriers/upsv3/shipper_state</config_path>
+                    </field>
+                    <field id="shipper_postal_code" translate="label" type="text" sortOrder="70"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Postal Code</label>
+                        <config_path>carriers/upsv3/shipper_postal_code</config_path>
+                    </field>
+                    <field id="shipper_country" translate="label comment" type="text" sortOrder="80"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Country Code</label>
+                        <comment>Two-letter code (e.g., US, CA)</comment>
+                        <config_path>carriers/upsv3/shipper_country</config_path>
+                    </field>
+                </group>
+
                 <!-- Shipping Restrictions -->
                 <group id="restrictions" translate="label" type="text" sortOrder="60"
                        showInDefault="1" showInWebsite="1" showInStore="0">

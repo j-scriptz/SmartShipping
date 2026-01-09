@@ -20,6 +20,9 @@ class Config
     private const OAUTH_TOKEN_PATH = '/security/v1/oauth/token';
     private const RATING_PATH = '/api/rating/v2205/Shop';
     private const TIME_IN_TRANSIT_PATH = '/api/shipments/v1/transittimes';
+    private const SHIP_PATH = '/api/shipments/v2205/ship';
+    private const SHIP_CANCEL_PATH = '/api/shipments/v2205/void/cancel';
+    private const TRACK_PATH = '/api/track/v1/details/';
 
     public function __construct(
         private readonly ScopeConfigInterface $scopeConfig
@@ -247,5 +250,172 @@ class Config
         return !empty($this->getClientId($storeId))
             && !empty($this->getClientSecret($storeId))
             && !empty($this->getAccountNumber($storeId));
+    }
+
+    // =========================================================================
+    // Label Generation Configuration
+    // =========================================================================
+
+    /**
+     * Get Ship API URL (for creating shipments/labels)
+     */
+    public function getShipUrl(?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::SHIP_PATH;
+    }
+
+    /**
+     * Get Ship Cancel URL (for voiding labels)
+     */
+    public function getCancelShipUrl(?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::SHIP_CANCEL_PATH;
+    }
+
+    /**
+     * Get Tracking URL
+     */
+    public function getTrackUrl(string $trackingNumber, ?int $storeId = null): string
+    {
+        return $this->getBaseUrl($storeId) . self::TRACK_PATH . $trackingNumber;
+    }
+
+    /**
+     * Check if label generation is enabled
+     */
+    public function isLabelEnabled(?int $storeId = null): bool
+    {
+        return $this->getFlag('label_enabled', $storeId);
+    }
+
+    /**
+     * Check if all required label credentials are configured
+     */
+    public function hasLabelCredentials(?int $storeId = null): bool
+    {
+        return $this->hasCredentials($storeId);
+    }
+
+    /**
+     * Get label format (GIF, PNG, PDF, ZPL, EPL)
+     */
+    public function getLabelFormat(?int $storeId = null): string
+    {
+        return $this->getValue('label_format', $storeId) ?? 'GIF';
+    }
+
+    /**
+     * Get label stock type
+     */
+    public function getLabelStockType(?int $storeId = null): string
+    {
+        return $this->getValue('label_stock_type', $storeId) ?? '4X6';
+    }
+
+    /**
+     * Get default package weight (lbs)
+     */
+    public function getDefaultWeight(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_weight', $storeId) ?? 1.0);
+    }
+
+    /**
+     * Get default package length (inches)
+     */
+    public function getDefaultLength(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_length', $storeId) ?? 12.0);
+    }
+
+    /**
+     * Get default package width (inches)
+     */
+    public function getDefaultWidth(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_width', $storeId) ?? 9.0);
+    }
+
+    /**
+     * Get default package height (inches)
+     */
+    public function getDefaultHeight(?int $storeId = null): float
+    {
+        return (float) ($this->getValue('default_height', $storeId) ?? 6.0);
+    }
+
+    /**
+     * Get shipper company name
+     */
+    public function getShipperCompany(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_company', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper contact name
+     */
+    public function getShipperContactName(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_contact_name', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper phone number
+     */
+    public function getShipperPhone(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_phone', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper street address
+     */
+    public function getShipperStreet(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_street', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper city
+     */
+    public function getShipperCity(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_city', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper state/province code
+     */
+    public function getShipperState(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_state', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper postal code
+     */
+    public function getShipperPostalCode(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_postal_code', $storeId) ?? '';
+    }
+
+    /**
+     * Get shipper country code
+     */
+    public function getShipperCountry(?int $storeId = null): string
+    {
+        return $this->getValue('shipper_country', $storeId) ?? 'US';
+    }
+
+    /**
+     * Check if shipper address is configured
+     */
+    public function hasShipperAddress(?int $storeId = null): bool
+    {
+        return !empty($this->getShipperStreet($storeId))
+            && !empty($this->getShipperCity($storeId))
+            && !empty($this->getShipperState($storeId))
+            && !empty($this->getShipperPostalCode($storeId));
     }
 }
