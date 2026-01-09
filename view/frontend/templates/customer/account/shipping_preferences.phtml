@@ -1,0 +1,55 @@
+<?php
+/**
+ * Jscriptz SmartShipping - Customer Shipping Preferences Template
+ *
+ * @var \Jscriptz\SmartShipping\Block\Customer\Account\ShippingPreferences $block
+ */
+?>
+<div class="block block-shipping-preferences">
+    <div class="block-title">
+        <strong><?= $block->escapeHtml(__('Shipping Notification Preferences')) ?></strong>
+    </div>
+    <div class="block-content">
+        <form class="form form-shipping-preferences"
+              action="<?= $block->escapeUrl($block->getSaveUrl()) ?>"
+              method="post"
+              id="form-shipping-preferences"
+              data-hasrequired="<?= $block->escapeHtml(__('* Required Fields')) ?>"
+              data-mage-init='{"validation":{}}'>
+            <?= $block->getBlockHtml('formkey') ?>
+
+            <fieldset class="fieldset">
+                <legend class="legend">
+                    <span><?= $block->escapeHtml(__('Delivery Photo Settings')) ?></span>
+                </legend>
+                <br>
+                <p class="field-note" style="margin-bottom: 15px;">
+                    <?= $block->escapeHtml(__('When your package is delivered, carriers may take a photo as proof of delivery. You can choose whether to receive these photos in your tracking notification emails.')) ?>
+                </p>
+
+                <div class="field choice">
+                    <input type="checkbox"
+                           name="disable_pod_photos"
+                           id="disable_pod_photos"
+                           value="1"
+                           class="checkbox"
+                           <?php if ($block->isPodPhotosDisabled()): ?>checked="checked"<?php endif; ?> />
+                    <label for="disable_pod_photos" class="label">
+                        <span><?= $block->escapeHtml(__('Do not include delivery photos in my tracking emails')) ?></span>
+                    </label>
+                    <p class="field-note" style="margin-top: 5px; font-size: 12px; color: #666;">
+                        <?= $block->escapeHtml(__('Check this box if you prefer not to receive photos of your delivered packages in email notifications. You can still view delivery photos on the carrier\'s tracking page.')) ?>
+                    </p>
+                </div>
+            </fieldset>
+
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action save primary" title="<?= $block->escapeHtmlAttr(__('Save Preferences')) ?>">
+                        <span><?= $block->escapeHtml(__('Save Preferences')) ?></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+Jscriptz SmartShipping - Frontend Routes
+
+Provides:
+- /smartshipping/webhook/receive/carrier/{code}/ - Webhook endpoint for carrier tracking updates
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="standard">
+        <route id="smartshipping" frontName="smartshipping">
+            <module name="Jscriptz_SmartShipping"/>
+        </route>
+    </router>
+</config>

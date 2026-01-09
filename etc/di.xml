@@ -18,6 +18,16 @@
     <preference for="Jscriptz\SmartShipping\Api\Data\TransitTimeInterface"
                 type="Jscriptz\SmartShipping\Model\TransitTime"/>
 
+    <!-- Webhook Tracking Interfaces -->
+    <preference for="Jscriptz\SmartShipping\Api\Data\TrackingEventInterface"
+                type="Jscriptz\SmartShipping\Model\TrackingEvent"/>
+    <preference for="Jscriptz\SmartShipping\Api\TrackingEventRepositoryInterface"
+                type="Jscriptz\SmartShipping\Model\TrackingEventRepository"/>
+    <preference for="Jscriptz\SmartShipping\Api\Data\WebhookSubscriptionInterface"
+                type="Jscriptz\SmartShipping\Model\WebhookSubscription"/>
+    <preference for="Jscriptz\SmartShipping\Api\WebhookSubscriptionRepositoryInterface"
+                type="Jscriptz\SmartShipping\Model\WebhookSubscriptionRepository"/>
+
     <!-- Shipment Service Interfaces -->
     <preference for="Jscriptz\SmartShipping\Api\ShipmentServiceInterface"
                 type="Jscriptz\SmartShipping\Model\Shipment\ShipmentService"/>
@@ -305,6 +315,48 @@
     <type name="Magento\Backend\Block\Widget\Button\Toolbar">
         <plugin name="smartshipping_add_label_button"
                 type="Jscriptz\SmartShipping\Plugin\Adminhtml\AddLabelButtonToOrderView"/>
+    </type>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Webhook Tracking Configuration
+         ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Webhook Virtual Logger -->
+    <virtualType name="Jscriptz\SmartShipping\Model\Webhook\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Jscriptz\SmartShipping\Model\Webhook\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Jscriptz\SmartShipping\Model\Webhook\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/smartshipping_webhook.log</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Webhook Processor Pool (carriers will inject their processors here) -->
+    <type name="Jscriptz\SmartShipping\Model\Webhook\ProcessorPool">
+        <arguments>
+            <argument name="processors" xsi:type="array">
+                <!-- Carrier processors will be added by each carrier module -->
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Webhook Controller -->
+    <type name="Jscriptz\SmartShipping\Controller\Webhook\Receive">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Webhook\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- Notification Service -->
+    <type name="Jscriptz\SmartShipping\Model\Webhook\NotificationService">
+        <arguments>
+            <argument name="logger" xsi:type="object">Jscriptz\SmartShipping\Model\Webhook\Logger</argument>
+        </arguments>
     </type>
 
 </config>

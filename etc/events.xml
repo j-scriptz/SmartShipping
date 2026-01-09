@@ -21,4 +21,10 @@
                   instance="Jscriptz\SmartShipping\Observer\AutoShipOnInvoice"/>
     </event>
 
+    <!-- Subscribe to carrier webhooks when tracking is added -->
+    <event name="sales_order_shipment_track_save_after">
+        <observer name="jscriptz_smartshipping_subscribe_to_tracking_webhook"
+                  instance="Jscriptz\SmartShipping\Observer\SubscribeToTrackingWebhook"/>
+    </event>
+
 </config>

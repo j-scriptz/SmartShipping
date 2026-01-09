@@ -1,0 +1,319 @@
+<?php
+/**
+ * Jscriptz SmartShipping - Admin Tracking History Template
+ *
+ * @var \Jscriptz\SmartShipping\Block\Adminhtml\Order\Shipment\View\TrackingHistory $block
+ */
+use Jscriptz\SmartShipping\Api\Data\TrackingEventInterface;
+
+$groupedEvents = $block->getGroupedEvents();
+?>
+
+<div class="admin__page-section tracking-history-section">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Tracking History')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <?php if (empty($groupedEvents)): ?>
+            <p class="no-tracking-events">
+                <?= $block->escapeHtml(__('No tracking information available yet.')) ?>
+            </p>
+        <?php else: ?>
+            <?php foreach ($groupedEvents as $trackingNumber => $data): ?>
+                <?php
+                $track = $data['track'];
+                $events = $data['events'];
+                $latestStatus = $data['latest_status'];
+                $carrierCode = $track->getCarrierCode() ?? '';
+                ?>
+                <div class="tracking-group" data-tracking-number="<?= $block->escapeHtmlAttr($trackingNumber) ?>">
+                    <div class="tracking-header">
+                        <div class="tracking-info">
+                            <span class="carrier-badge">
+                                <?= $block->escapeHtml($block->getCarrierName($carrierCode)) ?>
+                            </span>
+                            <span class="tracking-number">
+                                <a href="<?= $block->escapeUrl($block->getTrackingUrl($carrierCode, $trackingNumber)) ?>"
+                                   target="_blank"
+                                   title="<?= $block->escapeHtmlAttr(__('Track on carrier website')) ?>">
+                                    <?= $block->escapeHtml($trackingNumber) ?>
+                                    <span class="external-link-icon">&#8599;</span>
+                                </a>
+                            </span>
+                        </div>
+                        <?php if ($latestStatus): ?>
+                            <span class="message message-<?= $block->escapeHtmlAttr($block->getEventTypeBadgeClass($latestStatus->getEventType())) ?>">
+                                <?= $block->escapeHtml($block->getEventTypeLabel($latestStatus->getEventType())) ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (empty($events)): ?>
+                        <p class="no-events-message">
+                            <?= $block->escapeHtml(__('No tracking updates received yet. Updates will appear here once the carrier provides them.')) ?>
+                        </p>
+                    <?php else: ?>
+                        <div class="tracking-timeline">
+                            <?php foreach ($events as $index => $event): ?>
+                                <?php
+                                /** @var TrackingEventInterface $event */
+                                $isLatest = $index === 0;
+                                $eventType = $event->getEventType();
+                                ?>
+                                <div class="timeline-item <?= $isLatest ? 'latest' : '' ?> event-<?= $block->escapeHtmlAttr($eventType) ?>">
+                                    <div class="timeline-marker">
+                                        <span class="marker-dot <?= $block->escapeHtmlAttr($block->getEventTypeBadgeClass($eventType)) ?>"></span>
+                                        <?php if ($index < count($events) - 1): ?>
+                                            <span class="marker-line"></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="event-header">
+                                            <span class="event-type message message-<?= $block->escapeHtmlAttr($block->getEventTypeBadgeClass($eventType)) ?>">
+                                                <?= $block->escapeHtml($block->getEventTypeLabel($eventType)) ?>
+                                            </span>
+                                            <span class="event-time">
+                                                <?= $block->escapeHtml($block->formatEventTime($event->getEventTimestamp())) ?>
+                                            </span>
+                                        </div>
+                                        <?php if ($event->getEventDescription()): ?>
+                                            <p class="event-description">
+                                                <?= $block->escapeHtml($event->getEventDescription()) ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <?php $location = $event->getFormattedLocation(); ?>
+                                        <?php if ($location): ?>
+                                            <p class="event-location">
+                                                <span class="location-icon">&#128205;</span>
+                                                <?= $block->escapeHtml($location) ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <?php if ($event->getImageUrl()): ?>
+                                            <div class="event-image">
+                                                <a href="<?= $block->escapeUrl($event->getImageUrl()) ?>"
+                                                   target="_blank"
+                                                   class="proof-of-delivery-link">
+                                                    <span class="image-icon">&#128247;</span>
+                                                    <?= $block->escapeHtml(__('View Proof of Delivery')) ?>
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php if ($event->getSignatureProof()): ?>
+                                            <div class="event-signature">
+                                                <span class="signature-icon">&#9998;</span>
+                                                <span class="signature-label"><?= $block->escapeHtml(__('Signed by:')) ?></span>
+                                                <?= $block->escapeHtml($event->getSignatureProof()) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+</div>
+
+<style>
+    .tracking-history-section {
+        margin-top: 20px;
+    }
+
+    .tracking-history-section .no-tracking-events {
+        color: #666;
+        font-style: italic;
+        padding: 15px 0;
+    }
+
+    .tracking-group {
+        background: #fff;
+        border: 1px solid #e3e3e3;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        padding: 15px;
+    }
+
+    .tracking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e3e3e3;
+    }
+
+    .tracking-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .carrier-badge {
+        background: #41362f;
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .tracking-number a {
+        color: #007bdb;
+        text-decoration: none;
+        font-weight: 500;
+        font-family: monospace;
+        font-size: 13px;
+    }
+
+    .tracking-number a:hover {
+        text-decoration: underline;
+    }
+
+    .external-link-icon {
+        font-size: 10px;
+        margin-left: 3px;
+    }
+
+    .no-events-message {
+        color: #666;
+        font-style: italic;
+        padding: 10px 0;
+    }
+
+    .tracking-timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 20px;
+    }
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        top: 0;
+        width: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .marker-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ccc;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px #e3e3e3;
+        z-index: 1;
+    }
+
+    .marker-dot.success {
+        background: #4caf50;
+        box-shadow: 0 0 0 2px #c8e6c9;
+    }
+
+    .marker-dot.notice {
+        background: #2196f3;
+        box-shadow: 0 0 0 2px #bbdefb;
+    }
+
+    .marker-dot.minor {
+        background: #ff9800;
+        box-shadow: 0 0 0 2px #ffe0b2;
+    }
+
+    .marker-dot.critical {
+        background: #f44336;
+        box-shadow: 0 0 0 2px #ffcdd2;
+    }
+
+    .marker-line {
+        width: 2px;
+        flex-grow: 1;
+        background: #e3e3e3;
+        min-height: 30px;
+    }
+
+    .timeline-item.latest .marker-dot {
+        width: 14px;
+        height: 14px;
+    }
+
+    .timeline-content {
+        background: #f9f9f9;
+        border-radius: 4px;
+        padding: 12px;
+    }
+
+    .timeline-item.latest .timeline-content {
+        background: #e8f4fd;
+        border: 1px solid #bbdefb;
+    }
+
+    .event-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .event-type {
+        font-size: 11px;
+        padding: 2px 6px;
+    }
+
+    .event-time {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .event-description {
+        margin: 0 0 8px;
+        font-size: 13px;
+        color: #333;
+    }
+
+    .event-location {
+        margin: 0;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .location-icon {
+        margin-right: 4px;
+    }
+
+    .event-image,
+    .event-signature {
+        margin-top: 8px;
+        font-size: 12px;
+    }
+
+    .proof-of-delivery-link {
+        color: #007bdb;
+        text-decoration: none;
+    }
+
+    .proof-of-delivery-link:hover {
+        text-decoration: underline;
+    }
+
+    .image-icon,
+    .signature-icon {
+        margin-right: 4px;
+    }
+
+    .signature-label {
+        color: #666;
+    }
+</style>

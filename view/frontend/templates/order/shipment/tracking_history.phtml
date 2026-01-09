@@ -1,0 +1,172 @@
+<?php
+/**
+ * Jscriptz SmartShipping - Customer Tracking History Template
+ *
+ * @var \Jscriptz\SmartShipping\Block\Customer\Order\Shipment\TrackingHistory $block
+ */
+use Jscriptz\SmartShipping\Api\Data\TrackingEventInterface;
+
+$groupedEvents = $block->getGroupedEvents();
+?>
+
+<div class="tracking-history-container my-8">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-blue-600">
+            <path fill-rule="evenodd" d="M8.161 2.58a1.875 1.875 0 011.678 0l4.993 2.498c.106.052.23.052.336 0l3.869-1.935A1.875 1.875 0 0121.75 4.82v12.485c0 .71-.401 1.36-1.037 1.677l-4.875 2.437a1.875 1.875 0 01-1.676 0l-4.994-2.497a.375.375 0 00-.336 0l-3.868 1.935A1.875 1.875 0 012.25 19.18V6.695c0-.71.401-1.36 1.036-1.677l4.875-2.437zM9 6a.75.75 0 01.75.75V15a.75.75 0 01-1.5 0V6.75A.75.75 0 019 6zm6.75 3a.75.75 0 00-1.5 0v8.25a.75.75 0 001.5 0V9z" clip-rule="evenodd" />
+        </svg>
+        <?= $block->escapeHtml(__('Tracking History')) ?>
+    </h2>
+
+    <?php if (empty($groupedEvents)): ?>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto text-gray-400 mb-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+            </svg>
+            <p class="text-gray-600"><?= $block->escapeHtml(__('No tracking information available yet.')) ?></p>
+            <p class="text-sm text-gray-500 mt-1"><?= $block->escapeHtml(__('Tracking updates will appear here once your package is in transit.')) ?></p>
+        </div>
+    <?php else: ?>
+        <?php foreach ($groupedEvents as $trackingNumber => $data): ?>
+            <?php
+            $track = $data['track'];
+            $events = $data['events'];
+            $latestStatus = $data['latest_status'];
+            $carrierCode = $track->getCarrierCode() ?? '';
+            ?>
+            <div class="tracking-group bg-white border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden">
+                <!-- Tracking Header -->
+                <div class="tracking-header bg-gray-50 px-4 py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-gray-800 text-white text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide">
+                            <?= $block->escapeHtml($block->getCarrierName($carrierCode)) ?>
+                        </span>
+                        <a href="<?= $block->escapeUrl($block->getTrackingUrl($carrierCode, $trackingNumber)) ?>"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="text-blue-600 hover:text-blue-800 font-mono text-sm hover:underline flex items-center gap-1">
+                            <?= $block->escapeHtml($trackingNumber) ?>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                    <?php if ($latestStatus): ?>
+                        <?php $statusClass = $block->getEventTypeClass($latestStatus->getEventType()); ?>
+                        <span class="status-badge status-<?= $block->escapeHtmlAttr($statusClass) ?> inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold
+                            <?php if ($statusClass === 'delivered'): ?>
+                                bg-green-100 text-green-800
+                            <?php elseif ($statusClass === 'out-for-delivery'): ?>
+                                bg-blue-100 text-blue-800
+                            <?php elseif ($statusClass === 'in-transit' || $statusClass === 'picked-up'): ?>
+                                bg-amber-100 text-amber-800
+                            <?php elseif ($statusClass === 'exception' || $statusClass === 'cancelled'): ?>
+                                bg-red-100 text-red-800
+                            <?php else: ?>
+                                bg-gray-100 text-gray-800
+                            <?php endif; ?>
+                        ">
+                            <?= /* @noEscape */ $block->getEventIcon($latestStatus->getEventType()) ?>
+                            <?= $block->escapeHtml($block->getEventTypeLabel($latestStatus->getEventType())) ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Timeline -->
+                <div class="tracking-timeline p-4">
+                    <?php if (empty($events)): ?>
+                        <p class="text-gray-500 text-sm italic py-2">
+                            <?= $block->escapeHtml(__('Tracking updates will appear here once available from the carrier.')) ?>
+                        </p>
+                    <?php else: ?>
+                        <div class="relative">
+                            <?php foreach ($events as $index => $event): ?>
+                                <?php
+                                /** @var TrackingEventInterface $event */
+                                $isLatest = $index === 0;
+                                $isLast = $index === count($events) - 1;
+                                $eventType = $event->getEventType();
+                                $eventClass = $block->getEventTypeClass($eventType);
+                                ?>
+                                <div class="timeline-item flex gap-4 <?= $isLast ? '' : 'pb-6' ?> relative">
+                                    <!-- Timeline marker -->
+                                    <div class="flex flex-col items-center">
+                                        <div class="timeline-dot w-4 h-4 rounded-full border-2 flex-shrink-0 z-10
+                                            <?php if ($eventClass === 'delivered'): ?>
+                                                bg-green-500 border-green-500
+                                            <?php elseif ($eventClass === 'out-for-delivery'): ?>
+                                                bg-blue-500 border-blue-500
+                                            <?php elseif ($eventClass === 'in-transit' || $eventClass === 'picked-up'): ?>
+                                                bg-amber-500 border-amber-500
+                                            <?php elseif ($eventClass === 'exception' || $eventClass === 'cancelled'): ?>
+                                                bg-red-500 border-red-500
+                                            <?php else: ?>
+                                                bg-gray-400 border-gray-400
+                                            <?php endif; ?>
+                                            <?= $isLatest ? 'ring-4 ring-opacity-25 ' . ($eventClass === 'delivered' ? 'ring-green-500' : ($eventClass === 'out-for-delivery' ? 'ring-blue-500' : ($eventClass === 'exception' || $eventClass === 'cancelled' ? 'ring-red-500' : 'ring-amber-500'))) : '' ?>
+                                        "></div>
+                                        <?php if (!$isLast): ?>
+                                            <div class="timeline-line w-0.5 flex-grow bg-gray-200 mt-1"></div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <!-- Event content -->
+                                    <div class="flex-grow min-w-0 pb-1">
+                                        <div class="flex flex-wrap items-start justify-between gap-2">
+                                            <span class="font-medium text-gray-900
+                                                <?php if ($eventClass === 'delivered'): ?>
+                                                    text-green-700
+                                                <?php elseif ($eventClass === 'exception' || $eventClass === 'cancelled'): ?>
+                                                    text-red-700
+                                                <?php endif; ?>
+                                            ">
+                                                <?= $block->escapeHtml($block->getEventTypeLabel($eventType)) ?>
+                                            </span>
+                                            <span class="text-sm text-gray-500 whitespace-nowrap">
+                                                <?= $block->escapeHtml($block->formatEventTime($event->getEventTimestamp())) ?>
+                                            </span>
+                                        </div>
+                                        <?php if ($event->getEventDescription()): ?>
+                                            <p class="text-sm text-gray-600 mt-1">
+                                                <?= $block->escapeHtml($event->getEventDescription()) ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <?php $location = $event->getFormattedLocation(); ?>
+                                        <?php if ($location): ?>
+                                            <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-gray-400">
+                                                    <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                                                </svg>
+                                                <?= $block->escapeHtml($location) ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <?php if ($event->getImageUrl()): ?>
+                                            <a href="<?= $block->escapeUrl($event->getImageUrl()) ?>"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               class="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                                    <path fill-rule="evenodd" d="M1 5.25A2.25 2.25 0 013.25 3h13.5A2.25 2.25 0 0119 5.25v9.5A2.25 2.25 0 0116.75 17H3.25A2.25 2.25 0 011 14.75v-9.5zm1.5 5.81v3.69c0 .414.336.75.75.75h13.5a.75.75 0 00.75-.75v-2.69l-2.22-2.219a.75.75 0 00-1.06 0l-1.91 1.909.47.47a.75.75 0 11-1.06 1.06L6.53 8.091a.75.75 0 00-1.06 0l-2.97 2.97zM12 7a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd" />
+                                                </svg>
+                                                <?= $block->escapeHtml(__('View Proof of Delivery')) ?>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if ($event->getSignatureProof()): ?>
+                                            <p class="text-sm text-gray-600 mt-2 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-gray-400">
+                                                    <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+                                                </svg>
+                                                <span class="text-gray-500"><?= $block->escapeHtml(__('Signed by:')) ?></span>
+                                                <?= $block->escapeHtml($event->getSignatureProof()) ?>
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

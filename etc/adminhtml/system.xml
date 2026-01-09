@@ -1530,6 +1530,70 @@
                 </group>
             </group>
 
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 WEBHOOK TRACKING NOTIFICATIONS
+                 ═══════════════════════════════════════════════════════════════════ -->
+            <group id="webhook" translate="label comment" type="text" sortOrder="60"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Tracking Notifications</label>
+                <comment>Configure customer email notifications for real-time shipment tracking updates received via carrier webhooks.</comment>
+
+                <field id="callback_url" translate="label comment" type="text" sortOrder="5"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Webhook Callback URL</label>
+                    <frontend_model>Jscriptz\SmartShipping\Block\Adminhtml\System\Config\CallbackUrl</frontend_model>
+                    <comment>This is the URL carriers should use to send tracking updates. Replace {carrier} with: fedexv3, upsv3, or uspsv3</comment>
+                    <config_path>smartshipping/webhook/callback_url</config_path>
+                </field>
+                <field id="notification_enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Customer Notifications</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Send email notifications to customers when their shipment status changes.</comment>
+                    <config_path>smartshipping/webhook/notification_enabled</config_path>
+                </field>
+                <field id="notification_sender" translate="label" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email Sender</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                    <config_path>smartshipping/webhook/notification_sender</config_path>
+                    <depends>
+                        <field id="notification_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="notification_template" translate="label comment" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <comment>Select email template for tracking updates.</comment>
+                    <config_path>smartshipping/webhook/notification_template</config_path>
+                    <depends>
+                        <field id="notification_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="notification_events" translate="label comment" type="multiselect" sortOrder="35"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Events Triggering Email</label>
+                    <source_model>Jscriptz\SmartShipping\Model\Config\Source\TrackingEventType</source_model>
+                    <comment>Select which tracking events trigger customer emails. Leave empty for all events.</comment>
+                    <config_path>smartshipping/webhook/notification_events</config_path>
+                    <can_be_empty>1</can_be_empty>
+                    <depends>
+                        <field id="notification_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="include_pod_photos" translate="label comment" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Include Delivery Photos in Emails</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Include proof of delivery photos in tracking notification emails. Customers can opt out in their account settings.</comment>
+                    <config_path>smartshipping/webhook/include_pod_photos</config_path>
+                    <depends>
+                        <field id="notification_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
         </section>
 
     </system>

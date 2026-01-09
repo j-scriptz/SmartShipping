@@ -1,0 +1,139 @@
+<!--@subject {{trans "Shipment Update for Order #%order_id" order_id=$order.increment_id}} @-->
+<!--
+/**
+ * Jscriptz SmartShipping - Tracking Update Email Template
+ *
+ * Variables:
+ * - order: Magento\Sales\Model\Order
+ * - shipment: Magento\Sales\Model\Order\Shipment
+ * - track: Magento\Sales\Model\Order\Shipment\Track
+ * - event: Jscriptz\SmartShipping\Api\Data\TrackingEventInterface
+ * - tracking_number: string
+ * - event_type: string
+ * - event_description: string
+ * - event_timestamp: string
+ * - location: string
+ * - customer_name: string
+ */
+-->
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr class="email-intro">
+        <td>
+            <p class="greeting">{{trans "Hello %customer_name," customer_name=$customer_name}}</p>
+            <p>
+                {{trans "There's an update on your shipment for order #%order_id." order_id=$order.increment_id}}
+            </p>
+        </td>
+    </tr>
+    <tr class="email-summary">
+        <td>
+            <h2 style="margin-top: 30px; color: #333;">{{trans "Tracking Update"}}</h2>
+
+            <table cellpadding="0" cellspacing="0" border="0" width="100%"
+                   style="background: #f8f8f8; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
+                <tr>
+                    <td style="padding: 15px;">
+                        <!-- Status Badge -->
+                        {{depend event_type}}
+                        {{if event_type == 'delivered'}}
+                        <span style="background: #4CAF50; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 12px;">
+                            {{trans "Delivered"}}
+                        </span>
+                        {{/if}}
+                        {{if event_type == 'out_for_delivery'}}
+                        <span style="background: #2196F3; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 12px;">
+                            {{trans "Out for Delivery"}}
+                        </span>
+                        {{/if}}
+                        {{if event_type == 'in_transit'}}
+                        <span style="background: #FF9800; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 12px;">
+                            {{trans "In Transit"}}
+                        </span>
+                        {{/if}}
+                        {{if event_type == 'picked_up'}}
+                        <span style="background: #9C27B0; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 12px;">
+                            {{trans "Picked Up"}}
+                        </span>
+                        {{/if}}
+                        {{if event_type == 'label_created'}}
+                        <span style="background: #607D8B; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 12px;">
+                            {{trans "Label Created"}}
+                        </span>
+                        {{/if}}
+                        {{if event_type == 'exception'}}
+                        <span style="background: #F44336; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 12px;">
+                            {{trans "Exception"}}
+                        </span>
+                        {{/if}}
+                        {{/depend}}
+
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top: 15px;">
+                            <tr>
+                                <td width="120" style="color: #666; padding: 8px 0;">
+                                    <strong>{{trans "Tracking #:"}}</strong>
+                                </td>
+                                <td style="padding: 8px 0;">
+                                    {{var tracking_number}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="120" style="color: #666; padding: 8px 0;">
+                                    <strong>{{trans "Status:"}}</strong>
+                                </td>
+                                <td style="padding: 8px 0;">
+                                    {{var event_description}}
+                                </td>
+                            </tr>
+                            {{depend location}}
+                            <tr>
+                                <td width="120" style="color: #666; padding: 8px 0;">
+                                    <strong>{{trans "Location:"}}</strong>
+                                </td>
+                                <td style="padding: 8px 0;">
+                                    {{var location}}
+                                </td>
+                            </tr>
+                            {{/depend}}
+                            <tr>
+                                <td width="120" style="color: #666; padding: 8px 0;">
+                                    <strong>{{trans "Date/Time:"}}</strong>
+                                </td>
+                                <td style="padding: 8px 0;">
+                                    {{var event_timestamp}}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Track Package Button -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 30px;">
+                <tr>
+                    <td align="center">
+                        <a href="{{store url='sales/order/view' _query_order_id=$order.entity_id}}"
+                           style="background: #1979c3; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+                            {{trans "View Order Details"}}
+                        </a>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Order Summary -->
+            <h3 style="color: #333; margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                {{trans "Order Summary"}}
+            </h3>
+            <p>
+                <strong>{{trans "Order #:"}}</strong> {{var order.increment_id}}<br/>
+                <strong>{{trans "Order Date:"}}</strong> {{var order.created_at}}
+            </p>
+        </td>
+    </tr>
+    <tr class="email-information">
+        <td>
+            {{template config_path="design/email/footer_template"}}
+        </td>
+    </tr>
+</table>

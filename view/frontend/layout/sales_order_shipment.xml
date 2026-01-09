@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+Jscriptz SmartShipping - Customer Shipment View Layout
+
+Adds tracking history block to the customer account shipment view page.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Jscriptz\SmartShipping\Block\Customer\Order\Shipment\TrackingHistory"
+                   name="smartshipping.customer.tracking.history"
+                   template="Jscriptz_SmartShipping::order/shipment/tracking_history.phtml"
+                   after="sales.order.shipment"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<!--
+Jscriptz SmartShipping - Database Schema
+
+Tables:
+- jscriptz_shipping_tracking_event: Stores tracking events from carrier webhooks
+- jscriptz_shipping_webhook_subscription: Manages active webhook subscriptions
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- Tracking Events Table -->
+    <table name="jscriptz_shipping_tracking_event" resource="default" engine="innodb"
+           comment="Shipping Tracking Events from Carrier Webhooks">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
+                comment="Entity ID"/>
+        <column xsi:type="int" name="track_id" unsigned="true" nullable="true"
+                comment="FK to sales_shipment_track.entity_id"/>
+        <column xsi:type="varchar" name="tracking_number" nullable="false" length="255"
+                comment="Tracking Number"/>
+        <column xsi:type="varchar" name="carrier_code" nullable="false" length="32"
+                comment="Carrier Code (fedexv3, upsv3, uspsv3)"/>
+        <column xsi:type="varchar" name="event_code" nullable="false" length="64"
+                comment="Carrier-specific Event Code"/>
+        <column xsi:type="varchar" name="event_type" nullable="false" length="64"
+                comment="Normalized Event Type (in_transit, delivered, etc)"/>
+        <column xsi:type="text" name="event_description" nullable="true"
+                comment="Human-readable Event Description"/>
+        <column xsi:type="datetime" name="event_timestamp" nullable="false"
+                comment="When the Event Occurred"/>
+        <column xsi:type="varchar" name="location_city" nullable="true" length="255"
+                comment="Event Location City"/>
+        <column xsi:type="varchar" name="location_state" nullable="true" length="32"
+                comment="Event Location State/Province"/>
+        <column xsi:type="varchar" name="location_country" nullable="true" length="3"
+                comment="Event Location Country Code"/>
+        <column xsi:type="varchar" name="location_postal_code" nullable="true" length="20"
+                comment="Event Location Postal Code"/>
+        <column xsi:type="mediumtext" name="raw_payload" nullable="true"
+                comment="Raw JSON Payload from Webhook"/>
+        <column xsi:type="mediumtext" name="signature_proof" nullable="true"
+                comment="Signature Proof or POD Data"/>
+        <column xsi:type="varchar" name="image_url" nullable="true" length="1024"
+                comment="URL to Proof of Delivery Image"/>
+        <column xsi:type="smallint" name="email_sent" unsigned="true" nullable="false" default="0"
+                comment="Whether Notification Email Was Sent"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="JSCRIPTZ_SHIP_TRACK_EVT_TRACK_ID_SALES_SHIPMENT_TRACK_ENTITY_ID"
+                    table="jscriptz_shipping_tracking_event" column="track_id"
+                    referenceTable="sales_shipment_track" referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+
+        <index referenceId="JSCRIPTZ_SHIPPING_TRACKING_EVENT_TRACK_ID" indexType="btree">
+            <column name="track_id"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_TRACKING_EVENT_TRACKING_NUMBER" indexType="btree">
+            <column name="tracking_number"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_TRACKING_EVENT_CARRIER_CODE" indexType="btree">
+            <column name="carrier_code"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_TRACKING_EVENT_EVENT_TYPE" indexType="btree">
+            <column name="event_type"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_TRACKING_EVENT_EVENT_TIMESTAMP" indexType="btree">
+            <column name="event_timestamp"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_TRACKING_EVENT_EMAIL_SENT" indexType="btree">
+            <column name="email_sent"/>
+        </index>
+    </table>
+
+    <!-- Webhook Subscriptions Table -->
+    <table name="jscriptz_shipping_webhook_subscription" resource="default" engine="innodb"
+           comment="Webhook Subscriptions for Carrier Tracking">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
+                comment="Entity ID"/>
+        <column xsi:type="varchar" name="carrier_code" nullable="false" length="32"
+                comment="Carrier Code"/>
+        <column xsi:type="varchar" name="subscription_type" nullable="false" length="20"
+                comment="Subscription Type (account or tracking)"/>
+        <column xsi:type="varchar" name="webhook_id" nullable="true" length="255"
+                comment="Carrier Webhook ID"/>
+        <column xsi:type="varchar" name="account_number" nullable="true" length="64"
+                comment="Carrier Account Number (for account subscriptions)"/>
+        <column xsi:type="varchar" name="tracking_number" nullable="true" length="255"
+                comment="Tracking Number (for tracking subscriptions)"/>
+        <column xsi:type="int" name="track_id" unsigned="true" nullable="true"
+                comment="FK to sales_shipment_track.entity_id"/>
+        <column xsi:type="varchar" name="callback_url" nullable="false" length="1024"
+                comment="Webhook Callback URL"/>
+        <column xsi:type="varchar" name="security_token" nullable="false" length="255"
+                comment="HMAC Secret Token (Encrypted)"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="20" default="active"
+                comment="Subscription Status (active, inactive, error)"/>
+        <column xsi:type="text" name="events_filter" nullable="true"
+                comment="JSON Array of Subscribed Event Types"/>
+        <column xsi:type="datetime" name="expires_at" nullable="true"
+                comment="Subscription Expiration Date"/>
+        <column xsi:type="text" name="error_message" nullable="true"
+                comment="Last Error Message"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="JSCRIPTZ_SHIP_WEBHOOK_SUB_TRACK_ID_SALES_SHIPMENT_TRACK_ENTITY_ID"
+                    table="jscriptz_shipping_webhook_subscription" column="track_id"
+                    referenceTable="sales_shipment_track" referenceColumn="entity_id"
+                    onDelete="SET NULL"/>
+
+        <index referenceId="JSCRIPTZ_SHIPPING_WEBHOOK_SUBSCRIPTION_CARRIER_CODE" indexType="btree">
+            <column name="carrier_code"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_WEBHOOK_SUBSCRIPTION_TYPE" indexType="btree">
+            <column name="subscription_type"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_WEBHOOK_SUBSCRIPTION_WEBHOOK_ID" indexType="btree">
+            <column name="webhook_id"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_WEBHOOK_SUBSCRIPTION_TRACKING_NUMBER" indexType="btree">
+            <column name="tracking_number"/>
+        </index>
+        <index referenceId="JSCRIPTZ_SHIPPING_WEBHOOK_SUBSCRIPTION_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+
+</schema>

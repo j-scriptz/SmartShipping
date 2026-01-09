@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+Jscriptz SmartShipping - Admin Shipment View Layout
+
+Adds tracking history block to the shipment view page in admin.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="shipment_tracking">
+            <block class="Jscriptz\SmartShipping\Block\Adminhtml\Order\Shipment\View\TrackingHistory"
+                   name="smartshipping.tracking.history"
+                   after="-"/>
+        </referenceContainer>
+    </body>
+</page>

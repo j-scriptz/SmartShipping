@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+Jscriptz SmartShipping - Email Templates
+
+Registers email templates for shipping tracking notifications.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="smartshipping_tracking_update"
+              label="Shipping Tracking Update"
+              file="tracking_update.html"
+              type="html"
+              module="Jscriptz_SmartShipping"
+              area="frontend"/>
+</config>

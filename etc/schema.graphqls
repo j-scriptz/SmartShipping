@@ -19,3 +19,55 @@ type Query {
         cart_id: String! @doc(description: "The masked cart ID")
     ): [TransitTimeData!]! @resolver(class: "Jscriptz\\SmartShipping\\Model\\Resolver\\GetTransitTimes") @doc(description: "Get transit times for available shipping methods")
 }
+
+# Tracking Event Types for Webhook Integration
+
+enum TrackingEventTypeEnum @doc(description: "Normalized tracking event types") {
+    LABEL_CREATED @doc(description: "Shipping label has been created")
+    PICKED_UP @doc(description: "Package has been picked up by carrier")
+    IN_TRANSIT @doc(description: "Package is in transit")
+    OUT_FOR_DELIVERY @doc(description: "Package is out for delivery")
+    DELIVERED @doc(description: "Package has been delivered")
+    EXCEPTION @doc(description: "There is an issue with the delivery")
+    CANCELLED @doc(description: "Shipment has been cancelled")
+    UNKNOWN @doc(description: "Unknown event type")
+}
+
+type TrackingEventLocation @doc(description: "Location information for a tracking event") {
+    city: String @doc(description: "City name")
+    state: String @doc(description: "State or region code")
+    country: String @doc(description: "Country code (ISO 3166-1 alpha-2)")
+    postal_code: String @doc(description: "Postal or ZIP code")
+    formatted: String @doc(description: "Formatted location string (e.g., 'Memphis, TN, US')")
+}
+
+type TrackingEvent @doc(description: "A single tracking event from carrier webhook") {
+    entity_id: ID! @doc(description: "The unique ID for this tracking event")
+    event_code: String! @doc(description: "Carrier-specific event code")
+    event_type: TrackingEventTypeEnum! @doc(description: "Normalized event type")
+    event_description: String @doc(description: "Human-readable description of the event")
+    event_timestamp: String! @doc(description: "When the event occurred (ISO 8601 format)")
+    location: TrackingEventLocation @doc(description: "Location where the event occurred")
+    image_url: String @doc(description: "URL to proof of delivery image, if available")
+    signature_proof: String @doc(description: "Signature information, if available")
+}
+
+type ShipmentTrackingHistory @doc(description: "Extended tracking information with event history") {
+    tracking_number: String! @doc(description: "The tracking number")
+    carrier: String! @doc(description: "The carrier name")
+    carrier_code: String! @doc(description: "The carrier code (e.g., fedexv3, upsv3, uspsv3)")
+    current_status: TrackingEventTypeEnum @doc(description: "Current shipment status")
+    current_status_label: String @doc(description: "Human-readable current status")
+    tracking_url: String @doc(description: "URL to track package on carrier website")
+    events: [TrackingEvent]! @doc(description: "List of tracking events, most recent first")
+    estimated_delivery_date: String @doc(description: "Estimated delivery date if available")
+}
+
+extend type ShipmentTracking {
+    events: [TrackingEvent] @doc(description: "Detailed tracking event history") @resolver(class: "Jscriptz\\SmartShipping\\Model\\Resolver\\TrackingEvents")
+    current_status: TrackingEventTypeEnum @doc(description: "Current shipment status") @resolver(class: "Jscriptz\\SmartShipping\\Model\\Resolver\\CurrentTrackingStatus")
+}
+
+extend type OrderShipment {
+    tracking_history: [ShipmentTrackingHistory] @doc(description: "Extended tracking history with event details") @resolver(class: "Jscriptz\\SmartShipping\\Model\\Resolver\\TrackingHistory")
+}

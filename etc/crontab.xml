@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Jscriptz SmartShipping - Cron Jobs Configuration
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <!-- Process pending tracking email notifications every 5 minutes -->
+        <job name="smartshipping_process_pending_notifications"
+             instance="Jscriptz\SmartShipping\Cron\ProcessPendingNotifications"
+             method="execute">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+    </group>
+</config>
